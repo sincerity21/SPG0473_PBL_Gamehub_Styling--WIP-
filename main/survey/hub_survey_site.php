@@ -2,15 +2,13 @@
 session_start();
 require '../../hub_conn.php'; 
 
-// --- 1. Authentication & Authorization ---
 if (!isset($_SESSION['username']) || !isset($_SESSION['user_id'])) {
-    header('Location: ../../modals/hub_login.php');
+    header('Location: ../../hub_login.php');
     exit();
 }
 
-// --- 2. Get and Validate Game ID (from previous page) ---
 if (!isset($_GET['game_id']) || !is_numeric($_GET['game_id'])) {
-    // If game_id is lost, redirect to home
+    
     header('Location: ../logged_in/hub_home_logged_in.php'); 
     exit();
 }
@@ -19,10 +17,9 @@ $game_id = (int)$_GET['game_id'];
 $user_id = (int)$_SESSION['user_id'];
 $username = htmlspecialchars($_SESSION['username']);
 
-// --- 3. Fetch Game Data (for the modal's "Go to Game" button) ---
 $game = selectGameByID($game_id);
 if (!$game) {
-    // If game is invalid, just set a fallback link
+    
     $game_link = '../logged_in/hub_home_category_logged_in.php'; 
 } else {
     $game_link = $game['game_Link'];
@@ -32,14 +29,13 @@ $message = '';
 $message_type = '';
 $survey_finished = false;
 
-// --- 4. Handle Form Submission ---
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $satisfaction = $_POST['satisfaction'] ?? '';
     $open_feedback = $_POST['site_feedback'] ?? '';
 
     if (!empty($satisfaction) && !empty($open_feedback)) {
         if (upsertSiteFeedback($user_id, $satisfaction, $open_feedback)) {
-            // SUCCESS! Set flag to open modal
+            
             $survey_finished = true;
         } else {
             $message = 'There was an error saving your feedback. Please try again.';
@@ -51,7 +47,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     }
 }
 
-// --- 5. Fetch Existing Feedback to pre-fill form ---
 $existing_feedback = selectUserSiteFeedback($user_id);
 $current_satisfaction = $existing_feedback['feedback_site_satisfaction'] ?? '';
 $current_open_feedback = $existing_feedback['feedback_site_open'] ?? '';
@@ -65,11 +60,11 @@ $current_open_feedback = $existing_feedback['feedback_site_open'] ?? '';
     <title>Site Feedback - GameHub</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
     <style>
-        /* --- 1. CSS Variables for Theming --- */
         :root {
             --bg-color: #f4f7f6;
             --main-text-color: #333;
-            --accent-color: #3498db;
+            --accent-color: #9c1809ff;
+            --accent-color-darker: #801407;
             --secondary-text-color: #7f8c8d;
             --card-bg-color: white;
             --shadow-color: rgba(0, 0, 0, 0.05);
@@ -82,21 +77,17 @@ $current_open_feedback = $existing_feedback['feedback_site_open'] ?? '';
             --error-bg: #f8d7da;
             --error-text: #721c24;
             --error-border: #f5c6cb;
-
-            /* === NEW: Glass Colors === */
             --glass-bg-light: rgba(255, 255, 255, 0.7);
             --glass-bg-dark: rgba(30, 30, 30, 0.7);
-            
-            /* === NEW: Brand Colors === */
-            --brand-color: #e74c3c; /* Red for dark mode */
-            --brand-hover-color: #c0392b;
+            --star-color: #f39c12;
+            --heart-color: #e74c3c;
         }
         
-        /* --- 2. Dark Mode Fix --- */
         html.dark-mode body {
             --bg-color: #121212; 
             --main-text-color: #f4f4f4; 
-            --accent-color: #4dc2f9;
+            --accent-color: #f39c12;
+            --accent-color-darker: #c87f0a; 
             --secondary-text-color: #95a5a6; 
             --card-bg-color: #1e1e1e; 
             --shadow-color: rgba(0, 0, 0, 0.4);
@@ -109,115 +100,173 @@ $current_open_feedback = $existing_feedback['feedback_site_open'] ?? '';
             --error-bg: #3a1a1f;
             --error-text: #f8d7da;
             --error-border: #5c2a30;
-
-            /* === NEW: Dark Mode Brand Colors === */
-            --brand-color: #f1c40f; /* Yellow for light mode */
-            --brand-hover-color: #f39c12;
         }
 
-        /* === NEW BACKGROUND IMAGE STYLES === */
         .background-image {
             position: fixed;
-            top: -10px; /* Overscan to hide blur edges */
+            top: -10px;
             left: -10px;
             width: calc(100% + 20px);
             height: calc(100% + 20px);
-            z-index: -1; /* Behind all content */
-            
+            z-index: -1;
             background-size: cover;
             background-position: center;
             filter: blur(5px);
             transition: opacity 0.5s ease-in-out;
-            background-color: var(--bg-color); /* Fallback */
+            background-color: var(--bg-color);
         }
 
-        /* 1. Light Mode Image */
         #bg-light {
-            /* --- IMPORTANT: SET YOUR IMAGE PATH --- */
-            /* This path goes UP two levels (from /survey/ to /main/ to /) */
             background-image: url('../../uploads/home/prototype.jpg');
-            opacity: 1; /* Visible by default */
+            opacity: 1;
         }
 
-        /* 2. Dark Mode Image */
         #bg-dark {
-            /* --- IMPORTANT: SET YOUR IMAGE PATH --- */
             background-image: url('../../uploads/home/darksouls.jpg');
-            opacity: 0; /* Hidden by default */
+            opacity: 0;
         }
 
-        /* 3. The Swap Logic */
         html.dark-mode body #bg-light {
-            opacity: 0; /* Hide light image in dark mode */
-        }
-        html.dark-mode body #bg-dark {
-            opacity: 1; /* Show dark image in dark mode */
+            opacity: 0;
         }
         
-        /* === NEW: Dark Mode Glass Override === */
+        html.dark-mode body #bg-dark {
+            opacity: 1;
+        }
+        
         html.dark-mode body .header,
         html.dark-mode body .side-menu {
-            background-color: var(--glass-bg-dark); /* Dark glass */
+            background-color: var(--glass-bg-dark);
         }
-        /* === END NEW === */
 
-        /* --- 3. Base & Menu Styles --- */
+        html.dark-mode body .content-container,
+        html.dark-mode body .modal-container {
+             background-color: var(--glass-bg-dark);
+        }
+
         body { 
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; 
             margin: 0; 
             padding: 0; 
-            background-color: var(--bg-color); 
             color: var(--main-text-color); 
             min-height: 100vh; 
             transition: background-color 0.3s, color 0.3s; 
         }
-        .header {
-            /* background-color: var(--card-bg-color); */ /* OLD */
-            background-color: var(--glass-bg-light); /* NEW */
-            backdrop-filter: blur(10px); /* NEW */
-            padding: 15px 30px;
-            /* ... (other rules) ... */
-            top: 0;
+
+        .header { 
+            background-color: var(--glass-bg-light);
+            backdrop-filter: blur(10px);
+            padding: 15px 30px; 
+            display: flex; 
+            justify-content: space-between; 
+            align-items: center; 
+            box-shadow: 0 2px 4px var(--shadow-color); 
+            position: sticky; 
+            top: 0; 
             z-index: 1001;
-            transition: background-color 0.3s; /* Add transition for glass */
+            transition: background-color 0.3s;
         }
-        .logo { font-size: 24px; font-weight: 700; color: var(--brand-color); text-decoration: none; transition: color 0.3s; }
-        .menu-toggle { background: none; border: none; cursor: pointer; font-size: 24px; color: var(--main-text-color); padding: 5px; }
-        .side-menu {
-            position: fixed; top: 60px; right: 0; width: 220px;
-            /* background-color: var(--card-bg-color); */ /* OLD */
-            background-color: var(--glass-bg-light); /* NEW */
-            backdrop-filter: blur(10px); /* NEW */
-            box-shadow: -4px 4px 8px var(--shadow-color);
-            /* ... (other rules) ... */
-            transform: translateX(100%);
+
+        .logo { 
+            font-size: 24px; 
+            font-weight: 700; 
+            color: var(--accent-color); 
+            text-decoration: none; 
+            transition: color 0.3s; 
+        }
+
+        .menu-toggle { 
+            background: none; 
+            border: none; 
+            cursor: pointer; 
+            font-size: 24px; 
+            color: var(--main-text-color); 
+            padding: 5px; 
+        }
+
+        .side-menu { 
+            position: fixed; 
+            top: 60px; 
+            right: 0; 
+            width: 220px; 
+            background-color: var(--glass-bg-light);
+            backdrop-filter: blur(10px);
+            box-shadow: -4px 4px 8px var(--shadow-color); 
+            border-radius: 8px 0 8px 8px; 
+            padding: 10px 0; 
+            z-index: 1000; 
+            transform: translateX(100%); 
             transition: transform 0.3s ease-in-out, background-color 0.3s;
         }
-        .side-menu.open { transform: translateX(0); }
-        .side-menu a, .menu-item { 
-            display: block; padding: 12px 20px; 
+
+        .side-menu.open { 
+            transform: translateX(0); 
+        }
+
+        .side-menu a, 
+        .menu-item { 
+            display: block; 
+            padding: 12px 20px; 
             color: var(--main-text-color); 
             text-decoration: none; 
             transition: background-color 0.2s; 
             cursor: pointer; 
         }
-        .side-menu a:hover, .menu-item:hover { background-color: var(--brand-hover-color); color: white; }
-        .side-menu a.active { background-color: var(--brand-color); color: white; font-weight: bold; }
-        .side-menu a.active:hover { background-color: var(--brand-hover-color); }
-        .menu-divider { border-top: 1px solid var(--secondary-text-color); margin: 5px 0; }
-        .logout-link { color: #e74c3c !important; font-weight: bold; }
-        .icon { margin-right: 10px; width: 20px; text-align: center; }
-        .dark-mode-label { display: flex; justify-content: space-between; align-items: center; user-select: none; }
+
+        .side-menu a:hover, 
+        .menu-item:hover { 
+            background-color: var(--bg-color); 
+            color: var(--accent-color); 
+        }
+
+        .side-menu a.active { 
+            background-color: var(--accent-color); 
+            color: white; 
+            font-weight: bold; 
+        }
+
+        .side-menu a.active:hover { 
+            background-color: var(--accent-color);
+            filter: brightness(0.85); 
+        }
         
-        /* --- 4. Content & Form Styles --- */
+        .menu-divider { 
+            border-top: 1px solid var(--secondary-text-color); 
+            margin: 5px 0; 
+        }
+
+        .logout-link { 
+            color: #e74c3c !important; 
+            font-weight: bold; 
+        }
+
+        .logout-link:hover {
+             background-color: #4e2925; 
+        }
+
+        .icon { 
+            margin-right: 10px; 
+            width: 20px; 
+            text-align: center; 
+        }
+
+        .dark-mode-label { 
+            display: flex; 
+            justify-content: space-between; 
+            align-items: center; 
+            user-select: none; 
+        }
+        
         .content-container {
             max-width: 800px;
             margin: 30px auto;
             padding: 30px;
-            background-color: var(--card-bg-color);
+            background-color: var(--glass-bg-light);
+            backdrop-filter: blur(10px);
             border-radius: 8px;
             box-shadow: 0 4px 12px var(--shadow-color);
         }
+
         h2 {
             color: var(--welcome-title-color);
             text-align: center;
@@ -225,9 +274,11 @@ $current_open_feedback = $existing_feedback['feedback_site_open'] ?? '';
             padding-bottom: 10px;
             margin-top: 0;
         }
+
         .form-group {
             margin-bottom: 25px;
         }
+
         .form-group label {
             display: block;
             margin-bottom: 10px;
@@ -235,6 +286,7 @@ $current_open_feedback = $existing_feedback['feedback_site_open'] ?? '';
             font-size: 1.1em;
             color: var(--label-text-color);
         }
+
         textarea {
             width: 100%;
             min-height: 150px;
@@ -247,25 +299,29 @@ $current_open_feedback = $existing_feedback['feedback_site_open'] ?? '';
             color: var(--main-text-color);
             resize: vertical;
         }
+
         .radio-group {
             display: flex;
             flex-direction: column;
             gap: 10px;
         }
+
         .radio-label {
             display: flex;
             align-items: center;
             cursor: pointer;
             font-size: 1em;
         }
+
         .radio-label input {
             margin-right: 10px;
             accent-color: var(--accent-color);
         }
+
         .btn {
             width: 100%;
             padding: 12px;
-            background-color: #2ecc71; /* Green for 'Submit' */
+            background-color: #2ecc71;
             color: white;
             border: none;
             border-radius: 4px;
@@ -274,6 +330,7 @@ $current_open_feedback = $existing_feedback['feedback_site_open'] ?? '';
             transition: background-color 0.3s;
             margin-top: 10px;
         }
+
         .btn:hover {
             background-color: #27ae60;
         }
@@ -285,7 +342,10 @@ $current_open_feedback = $existing_feedback['feedback_site_open'] ?? '';
             text-decoration: none;
             font-weight: 600;
         }
-        .back-link:hover { text-decoration: underline; }
+
+        .back-link:hover { 
+            text-decoration: underline; 
+        }
         
         .message { 
             padding: 15px; 
@@ -294,13 +354,13 @@ $current_open_feedback = $existing_feedback['feedback_site_open'] ?? '';
             font-weight: bold; 
             text-align: center;
         }
+
         .error { 
             background-color: var(--error-bg); 
             color: var(--error-text); 
             border: 1px solid var(--error-border); 
         }
 
-        /* --- 5. Modal Styles --- */
         .modal-overlay {
             position: fixed;
             top: 0;
@@ -313,6 +373,7 @@ $current_open_feedback = $existing_feedback['feedback_site_open'] ?? '';
             align-items: center;
             justify-content: center;
         }
+
         .modal-container {
             background-color: var(--card-bg-color);
             padding: 30px;
@@ -324,22 +385,26 @@ $current_open_feedback = $existing_feedback['feedback_site_open'] ?? '';
             margin: 20px;
             text-align: center;
         }
+
         .modal-container h2 {
             color: var(--welcome-title-color);
             border-bottom: none;
             margin-bottom: 15px;
         }
+
         .modal-container p {
             font-size: 1.1em;
             color: var(--secondary-text-color);
             line-height: 1.6;
             margin-bottom: 30px;
         }
+
         .modal-buttons {
             display: flex;
             gap: 15px;
             justify-content: center;
         }
+
         .modal-btn {
             display: inline-block;
             padding: 12px 25px;
@@ -352,20 +417,23 @@ $current_open_feedback = $existing_feedback['feedback_site_open'] ?? '';
             background-color: var(--accent-color);
             color: white;
         }
+
         .modal-btn.secondary {
             background-color: var(--card-bg-color);
             color: var(--accent-color);
         }
+
         .modal-btn:hover {
             transform: translateY(-2px);
             box-shadow: 0 4px 8px rgba(0,0,0,0.2);
         }
+
         .modal-btn.secondary:hover {
             background-color: var(--bg-color);
         }
     </style>
 
-    <!-- === DARK MODE FIX SCRIPT === -->
+    
     <script>
         (function() {
             const localStorageKey = 'gamehubDarkMode'; 
@@ -457,19 +525,18 @@ $current_open_feedback = $existing_feedback['feedback_site_open'] ?? '';
 </div>
 
 <?php
-    // Include the new modal file
-    // We pass the $game_link variable to it
+    
     include '../../modals/main/survey/hub_survey_finished.php';
 ?>
 
 <script>
-    // --- 1. Side Menu Toggle Logic ---
+    
     document.getElementById('menuToggle').addEventListener('click', function() {
         const menu = document.getElementById('sideMenu');
         menu.classList.toggle('open');
     });
 
-    // --- 2. Updated Dark Mode Logic (Fixes Flicker) ---
+    
     const darkModeText = document.getElementById('darkModeText');
     const localStorageKey = 'gamehubDarkMode';
     const htmlElement = document.documentElement; 
@@ -495,7 +562,7 @@ $current_open_feedback = $existing_feedback['feedback_site_open'] ?? '';
         applyDarkMode(isDark);
     })();
     
-    // --- 3. Modal Control Logic ---
+    
     function openModal(modalId) {
         const modal = document.getElementById(modalId);
         if (modal) modal.style.display = 'flex';
@@ -506,7 +573,7 @@ $current_open_feedback = $existing_feedback['feedback_site_open'] ?? '';
         if (modal) modal.style.display = 'none';
     }
     
-    // Auto-open modal if PHP has set the survey_finished flag
+    
     <?php if ($survey_finished): ?>
         openModal('surveyFinishedModal');
     <?php endif; ?>
