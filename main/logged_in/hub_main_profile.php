@@ -556,7 +556,7 @@ $fallback_cover = 'uploads/placeholder.png'; // Fallback for games without cover
 <div class="profile-container">
 
     <aside class="account-panel">
-        <h2>ACCOUNT</h2>
+        <h2>YOUR ACCOUNT</h2>
         <div class="user-details">
             <p><strong>Username:</strong> <span id="currentUsername"><?php echo $username; ?></span></p>
             <p><strong>Email:</strong> <?php echo $email; ?></p>
