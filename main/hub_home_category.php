@@ -1153,6 +1153,7 @@ $fallback_cover = 'uploads/placeholder.png';
         const favoriteIcon = document.getElementById('modalFavoriteIcon');
         if (favoriteIcon) {
             favoriteIcon.addEventListener('click', function() {
+                closeGameModal();
                 openModal('loginModal');
             });
         }
@@ -1162,6 +1163,7 @@ $fallback_cover = 'uploads/placeholder.png';
             const stars = starRatingContainer.querySelectorAll('.star');
             stars.forEach(star => {
                 star.addEventListener('click', function() {
+                    closeGameModal();
                     openModal('loginModal');
                 });
             });
