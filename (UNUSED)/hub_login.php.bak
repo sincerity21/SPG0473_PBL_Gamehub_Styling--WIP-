@@ -170,14 +170,14 @@ if ($_POST) {
             </div>
             
             <div class="forgot-link">
-                <a href="hub_forgotpassword.php">Forget password?</a>
+                <a href="modals/hub_forgotpassword.php">Forget password?</a>
             </div>
             
             <button type="submit" class="btn">Login</button>
         </form>
         
         <div class="register-link">
-            <p>Don't have an account? <a href="hub_register.php">Register here</a></p>
+            <p>Don't have an account? <a href="modals/hub_register.php">Register here</a></p>
         </div>
     </div>
 </body>

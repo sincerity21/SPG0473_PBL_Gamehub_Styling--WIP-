@@ -3,7 +3,7 @@ session_start();
 require '../../hub_conn.php';
 
 if (!isset($_SESSION['username'])) {
-    header('Location: ../../hub_login.php');
+    header('Location: ../../modals/hub_login.php');
     exit();
 }
 
@@ -318,9 +318,9 @@ $games = selectAllGames();
 
     <?php
     // --- NEW: Include modal files ---
-    include 'hub_admin_game_add.php';
+    include '../../modals/admin/games/hub_admin_game_add.php';
     if ($game_to_edit) {
-        include 'hub_admin_game_edit.php';
+        include '../../modals/admin/games/hub_admin_game_edit.php';
     }
     ?>
 

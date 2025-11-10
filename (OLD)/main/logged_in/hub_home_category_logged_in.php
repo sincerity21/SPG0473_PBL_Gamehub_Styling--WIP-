@@ -3,7 +3,7 @@ session_start();
 require '../../hub_conn.php';
 
 if (!isset($_SESSION['username'])) {
-    header('Location: ../../hub_login.php');
+    header('Location: ../../modals/hub_login.php');
     exit();
 }
 

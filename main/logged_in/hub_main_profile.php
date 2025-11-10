@@ -3,7 +3,7 @@ session_start();
 require '../../hub_conn.php'; 
 
 if (!isset($_SESSION['username']) || !isset($_SESSION['user_id'])) {
-    header('Location: ../../hub_login.php');
+    header('Location: ../../modals/hub_login.php');
     exit();
 }
 
@@ -437,7 +437,8 @@ $fallback_cover = 'uploads/placeholder.png';
         .modal-close {
             position: absolute;
             top: 10px;
-            right: 15px;
+            left: 15px;
+            right: auto; 
             font-size: 28px;
             font-weight: bold;
             color: var(--secondary-text-color);
@@ -535,7 +536,7 @@ $fallback_cover = 'uploads/placeholder.png';
             border-radius: 8px;
             background-color: var(--bg-color);
             border: 1px solid var(--border-color);
-            margin-top: 10px;
+            margin-top: 30px;
         }
 
         .modal-container .slide { 
@@ -814,10 +815,10 @@ $fallback_cover = 'uploads/placeholder.png';
 
 <?php
     
-    include 'modal_change_username.php';
-    include 'modal_change_password.php';
+    include '../../modals/main/logged_in/modal_change_username.php';
+    include '../../modals/main/logged_in/modal_change_password.php';
     
-    include 'hub_main_profile_game_details.php';
+    include '../../modals/main/logged_in/hub_main_profile_game_details.php';
 ?>
 
 <script>

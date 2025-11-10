@@ -645,11 +645,11 @@ if (isset($_SESSION['temp_user_id']) && isset($_SESSION['security_question']) &&
 
 <?php
     // Included relevant modals
-    include '../hub_login.php';
-    include '../hub_register.php';
-    include '../hub_forgotpassword.php'; // Step 1
-    include '../hub_forgotpassword2.php'; // Step 2
-    include '../hub_resetpassword.php'; // Step 3
+    include '../modals/hub_login.php';
+    include '../modals/hub_register.php';
+    include '../modals/hub_forgotpassword.php'; // Step 1
+    include '../modals/hub_forgotpassword2.php'; // Step 2
+    include '../modals/hub_resetpassword.php'; // Step 3
 ?>
 
 <script>

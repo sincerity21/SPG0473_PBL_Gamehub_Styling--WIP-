@@ -6,13 +6,13 @@ require '../../hub_conn.php';
 
 // 1. Authentication Check (Must be logged in)
 if (!isset($_SESSION['username']) || !isset($_SESSION['user_id'])) {
-    header('Location: ../hub_login.php');
+    header('Location: ../modals/hub_login.php');
     exit();
 } 
 
 // 2. Authorization Check (Must be an Admin to delete users)
 if (!isset($_SESSION['is_admin']) || $_SESSION['is_admin'] !== true) {
-    header('Location: ../hub_home_logged_in.php'); 
+    header('Location: ../../main/logged_in/hub_home_logged_in.php'); 
     exit();
 }
 
@@ -47,7 +47,7 @@ if (isset($_GET['id'])) {
             session_destroy();
             
             // KICK THE USER OUT to the login page
-            header('Location: ../hub_login.php?status=self_deleted'); 
+            header('Location: ../modals/hub_login.php?status=self_deleted'); 
             exit();
         }
         

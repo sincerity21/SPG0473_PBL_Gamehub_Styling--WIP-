@@ -4,7 +4,7 @@ require '../../hub_conn.php';
 
 // Check for user login
 if (!isset($_SESSION['username'])) {
-    header('Location: ../../hub_login.php');
+    header('Location: ../../modals/hub_login.php');
     exit();
 }
 
@@ -353,8 +353,8 @@ $page_title = $current_game ? "Image Management for: " . htmlspecialchars($curre
     // --- NEW: Include modal files ---
     // Only include if we are in a state that needs them
     if ($game_id) {
-        include 'hub_admin_img_add.php';
-        include 'hub_admin_cover_add.php';
+        include '../../modals/admin/img/hub_admin_img_add.php';
+        include '../../modals/admin/img/hub_admin_cover_add.php';
     }
     ?>
 

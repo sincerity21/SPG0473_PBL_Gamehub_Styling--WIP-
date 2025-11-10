@@ -3,7 +3,7 @@ session_start();
 
 //  Check for login
 if (!isset($_SESSION['username'])) {
-    header('Location: ../../hub_login.php');
+    header('Location: ../../modals/hub_login.php');
     exit();
 }
 

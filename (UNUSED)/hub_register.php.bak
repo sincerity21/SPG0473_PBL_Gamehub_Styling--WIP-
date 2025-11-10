@@ -19,7 +19,7 @@ if($_POST){
         echo "<script>alert('You must fill in all fields');</script>";
     }
     else if ($success) {
-        header('Location: hub_login.php');
+        header('Location: modals/hub_login.php');
         exit();
     } else {
         $error = "Registration failed. Username or email may already be in use.";
@@ -196,7 +196,7 @@ if($_POST){
         </form>
 
         <div class="register-link">
-            <p>Already have an account? <a href="hub_login.php">Login here</a></p>
+            <p>Already have an account? <a href="modals/hub_login.php">Login here</a></p>
         </div>
         
     </div>

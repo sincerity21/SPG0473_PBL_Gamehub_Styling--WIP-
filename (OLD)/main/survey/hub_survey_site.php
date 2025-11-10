@@ -3,7 +3,7 @@ session_start();
 require '../../hub_conn.php'; 
 
 if (!isset($_SESSION['username']) || !isset($_SESSION['user_id'])) {
-    header('Location: ../../hub_login.php');
+    header('Location: ../../modals/hub_login.php');
     exit();
 }
 
@@ -419,7 +419,7 @@ $current_open_feedback = $existing_feedback['feedback_site_open'] ?? '';
 
 <?php
     // Included relevant modals
-    include 'hub_survey_finished.php';
+    include '../../modals/main/survey/hub_survey_finished.php';
 ?>
 
 <script>

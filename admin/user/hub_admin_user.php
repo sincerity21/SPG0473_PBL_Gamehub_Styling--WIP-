@@ -4,7 +4,7 @@ require '../../hub_conn.php';
 
 // --- 1. Authentication Check (Must be logged in) ---
 if (!isset($_SESSION['username'])) {
-    header('Location: ../../hub_login.php');
+    header('Location: ../../modals/hub_login.php');
     exit();
 }
 
@@ -227,7 +227,7 @@ $users = selectAllUsers();
     // --- NEW: Include the modal file ---
     // We only include it if we are in an edit state
     if ($user_to_edit) {
-        include 'hub_admin_user_edit.php';
+        include '../../modals/admin/user/hub_admin_user_edit.php';
     }
     ?>
 

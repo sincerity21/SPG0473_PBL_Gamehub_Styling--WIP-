@@ -4,7 +4,7 @@ require '../../hub_conn.php';
 
 // --- 1. Authentication & Authorization ---
 if (!isset($_SESSION['username']) || !isset($_SESSION['user_id'])) {
-    header('Location: ../../hub_login.php');
+    header('Location: ../../modals/hub_login.php');
     exit();
 }
 
@@ -459,7 +459,7 @@ $current_open_feedback = $existing_feedback['feedback_site_open'] ?? '';
 <?php
     // Include the new modal file
     // We pass the $game_link variable to it
-    include 'hub_survey_finished.php';
+    include '../../modals/main/survey/hub_survey_finished.php';
 ?>
 
 <script>

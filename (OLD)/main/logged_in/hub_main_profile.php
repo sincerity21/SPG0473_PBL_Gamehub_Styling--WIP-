@@ -4,7 +4,7 @@ require '../../hub_conn.php';
 
 // check for login
 if (!isset($_SESSION['username']) || !isset($_SESSION['user_id'])) {
-    header('Location: ../../hub_login.php');
+    header('Location: ../../modals/hub_login.php');
     exit();
 }
 
@@ -568,10 +568,10 @@ $fallback_cover = 'uploads/placeholder.png';
 
 <?php
     // Include Modals
-    include 'modal_change_username.php';
-    include 'modal_change_password.php';
+    include '../../modals/main/logged_in/modal_change_username.php';
+    include '../../modals/main/logged_in/modal_change_password.php';
     // Include game detail modal template
-    include 'hub_main_profile_game_details.php';
+    include '../../modals/main/logged_in/hub_main_profile_game_details.php';
 ?>
 
 <script>

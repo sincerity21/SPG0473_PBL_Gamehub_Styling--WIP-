@@ -744,11 +744,11 @@ $fallback_cover = 'uploads/placeholder.png';
 
 <?php
     
-    include '../hub_login.php';
-    include '../hub_register.php';
-    include '../hub_forgotpassword.php'; 
-    include '../hub_forgotpassword2.php'; 
-    include '../hub_resetpassword.php'; 
+    include '../modals/hub_login.php';
+    include '../modals/hub_register.php';
+    include '../modals/hub_forgotpassword.php'; 
+    include '../modals/hub_forgotpassword2.php'; 
+    include '../modals/hub_resetpassword.php'; 
 ?>
 
 <script>

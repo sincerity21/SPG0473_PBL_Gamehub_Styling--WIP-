@@ -5,7 +5,7 @@ require '../../hub_conn.php';
 // Check for login
 
 if (!isset($_SESSION['username']) || !isset($_SESSION['user_id'])) {
-    header('Location: ../../hub_login.php');
+    header('Location: ../../modals/hub_login.php');
     exit();
 }
 $username = htmlspecialchars($_SESSION['username']);

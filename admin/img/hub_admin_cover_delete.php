@@ -4,7 +4,7 @@ require '../../hub_conn.php';
 
 // Ensure the user is logged in
 if (!isset($_SESSION['username'])) {
-    header('Location: ../hub_login.php');
+    header('Location: ../modals/hub_login.php');
     exit();
 }
 
