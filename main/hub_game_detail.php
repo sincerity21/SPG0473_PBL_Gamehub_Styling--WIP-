@@ -404,6 +404,217 @@ if (empty($gallery_images)) {
             user-select: none;
         }
 
+        .dark-mode-label .icon {
+            font-size: 1.2em;
+        }
+
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.7);
+            z-index: 2000;
+            display: none;
+            align-items: center;
+            justify-content: center;
+            overflow-y: auto;
+        }
+
+        .modal-container {
+            background-color: var(--card-bg-color);
+            padding: 30px;
+            border-radius: 8px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+            position: relative;
+            width: 100%;
+            max-width: 500px;
+            color: var(--main-text-color);
+            margin: 20px;
+        }
+
+        .modal-close {
+            position: absolute;
+            top: 10px;
+            right: 15px;
+            font-size: 28px;
+            font-weight: bold;
+            color: #aaa;
+            background: none;
+            border: none;
+            cursor: pointer;
+            color: var(--secondary-text-color);
+        }
+
+        .modal-container h2 {
+            color: var(--welcome-title-color);
+            text-align: center;
+            margin-top: 0;
+            margin-bottom: 25px;
+            border-bottom: 2px solid var(--accent-color);
+            padding-bottom: 10px;
+        }
+
+        .modal-container .form-group {
+            margin-bottom: 20px;
+        }
+
+        .modal-container label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: bold;
+            color: var(--secondary-text-color);
+        }
+
+        .modal-container input[type="text"],
+        .modal-container input[type="email"],
+        .modal-container input[type="password"],
+        .modal-container select {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid var(--border-color);
+            border-radius: 4px;
+            box-sizing: border-box;
+            font-size: 16px;
+            background-color: var(--bg-color);
+            color: var(--main-text-color);
+        }
+
+        .modal-container .btn {
+            width: 100%;
+            padding: 12px;
+            background-color: #3498db;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            font-size: 18px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+            margin-top: 10px;
+        }
+
+        .modal-container .btn:hover {
+            background-color: #2980b9;
+        }
+
+        .modal-container .error {
+            background-color: #fdd;
+            color: #c00;
+            padding: 10px;
+            border: 1px solid #f99;
+            border-radius: 4px;
+            margin-bottom: 15px;
+            text-align: center;
+            font-weight: bold;
+        }
+
+        .modal-container .success {
+            background-color: #d4edda;
+            color: #155724;
+            padding: 10px;
+            border: 1px solid #c3e6cb;
+            border-radius: 4px;
+            margin-bottom: 15px;
+            text-align: center;
+            font-weight: bold;
+        }
+
+        .modal-container .register-link {
+            text-align: center;
+            margin-top: 20px;
+            font-size: 14px;
+        }
+
+        .modal-container .register-link a {
+            color: var(--accent-color);
+            text-decoration: none;
+            font-weight: bold;
+            cursor: pointer;
+        }
+
+        .modal-container .register-link a:hover {
+            text-decoration: underline;
+        }
+
+        .modal-container .forgot-link {
+            text-align: right;
+            margin-top: -15px;
+            margin-bottom: 20px;
+            font-size: 13px;
+        }
+
+        .modal-container .forgot-link a {
+            color: var(--accent-color);
+            text-decoration: none;
+            font-weight: bold;
+        }
+
+        .modal-container .greeting {
+            margin-bottom: 25px;
+            line-height: 1.4;
+        }
+
+        .modal-container .prompt {
+            font-size: 1.1em;
+            font-weight: bold;
+            margin-bottom: 15px;
+        }
+
+        .modal-container input[readonly] {
+            background-color: var(--bg-color);
+            opacity: 0.7;
+        }
+
+        #loginModal .login-form {
+            display: flex;
+            flex-direction: column;
+            text-align: left;
+            width: 100%;
+        }
+
+        #loginModal .form-links {
+            text-align: right;
+            margin-top: -10px;
+            margin-bottom: 15px;
+        }
+
+        #loginModal .form-links a {
+            font-size: 0.9rem;
+            text-decoration: none;
+            color: var(--accent-color);
+            font-weight: bold;
+            cursor: pointer;
+        }
+
+        #loginModal .form-links a:hover {
+            text-decoration: underline;
+        }
+
+        #registerModal .sketch-form {
+            display: flex;
+            flex-direction: column;
+            text-align: left;
+            width: 100%;
+            max-height: 60vh;
+            overflow-y: auto;
+            padding-right: 10px;
+        }
+        
+        #forgotPasswordModal .btn {
+            background-color: #2ecc71;
+        }
+        #forgotPasswordModal .btn:hover {
+            background-color: #27ae60;
+        }
+
+        #resetPasswordModal .btn {
+            background-color: #2ecc71;
+        }
+        #resetPasswordModal .btn:hover {
+            background-color: #27ae60;
+        }
+
         .content-container {
             max-width: 1000px;
             margin: 30px auto;
@@ -603,498 +814,6 @@ if (empty($gallery_images)) {
 
         .back-link:hover {
             text-decoration: underline;
-        }
-
-        .dark-mode-label .icon {
-            font-size: 1.2em;
-        }
-
-        .modal-overlay {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: rgba(0, 0, 0, 0.7);
-            z-index: 2000;
-            display: none;
-            align-items: center;
-            justify-content: center;
-            overflow-y: auto;
-        }
-
-        .modal-container {
-            background-color: var(--card-bg-color);
-            padding: 30px;
-            border-radius: 8px;
-            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
-            position: relative;
-            width: 100%;
-            max-width: 500px;
-            color: var(--main-text-color);
-            margin: 20px;
-        }
-
-        .modal-close {
-            position: absolute;
-            top: 10px;
-            right: 15px;
-            font-size: 28px;
-            font-weight: bold;
-            color: var(--secondary-text-color);
-            background: none;
-            border: none;
-            cursor: pointer;
-        }
-
-        .modal-container h2 {
-            color: var(--welcome-title-color);
-            text-align: center;
-            margin-top: 0;
-            margin-bottom: 25px;
-            border-bottom: 2px solid var(--accent-color);
-            padding-bottom: 10px;
-        }
-
-        .modal-container .form-group {
-            margin-bottom: 20px;
-        }
-
-        .modal-container label {
-            display: block;
-            margin-bottom: 8px;
-            font-weight: bold;
-            color: var(--secondary-text-color);
-        }
-
-        .modal-container input[type="text"],
-        .modal-container input[type="email"],
-        .modal-container input[type="password"],
-        .modal-container select {
-            width: 100%;
-            padding: 10px;
-            border: 1px solid var(--border-color);
-            border-radius: 4px;
-            box-sizing: border-box;
-            font-size: 16px;
-            background-color: var(--bg-color);
-            color: var(--main-text-color);
-        }
-
-        .modal-container .btn {
-            width: 100%;
-            padding: 12px;
-            background-color: #3498db;
-            color: white;
-            border: none;
-            border-radius: 4px;
-            font-size: 18px;
-            cursor: pointer;
-            transition: background-color 0.3s;
-            margin-top: 10px;
-        }
-
-        .modal-container .btn:hover {
-            background-color: #2980b9;
-        }
-
-        .modal-container .error {
-            background-color: #fdd;
-            color: #c00;
-            padding: 10px;
-            border: 1px solid #f99;
-            border-radius: 4px;
-            margin-bottom: 15px;
-            text-align: center;
-            font-weight: bold;
-        }
-
-        .modal-container .success {
-            background-color: #d4edda;
-            color: #155724;
-            padding: 10px;
-            border: 1px solid #c3e6cb;
-            border-radius: 4px;
-            margin-bottom: 15px;
-            text-align: center;
-            font-weight: bold;
-        }
-
-        .modal-container .register-link {
-            text-align: center;
-            margin-top: 20px;
-            font-size: 14px;
-        }
-
-        .modal-container .register-link a {
-            color: var(--accent-color);
-            text-decoration: none;
-            font-weight: bold;
-            cursor: pointer;
-        }
-
-        .modal-container .register-link a:hover {
-            text-decoration: underline;
-        }
-
-        .modal-container .forgot-link {
-            text-align: right;
-            margin-top: -15px;
-            margin-bottom: 20px;
-            font-size: 13px;
-        }
-
-        .modal-container .forgot-link a {
-            color: var(--accent-color);
-            text-decoration: none;
-            font-weight: bold;
-        }
-
-        .modal-container .greeting {
-            margin-bottom: 25px;
-            line-height: 1.4;
-        }
-
-        .modal-container .prompt {
-            font-size: 1.1em;
-            font-weight: bold;
-            margin-bottom: 15px;
-        }
-
-        .modal-container input[readonly] {
-            background-color: var(--bg-color);
-            opacity: 0.7;
-        }
-
-        #loginModal {
-            font-family: 'Kalam', cursive;
-        }
-
-        #loginModal .modal-container {
-            background: none;
-            box-shadow: none;
-            padding: 0;
-            max-width: 700px;
-        }
-
-        #loginModal .sketch-container {
-            background: var(--card-bg-color);
-            border: 3px solid var(--main-text-color);
-            padding: 2rem;
-            text-align: center;
-            width: 100%;
-            position: relative;
-            border-radius: 20px 18px 22px 19px;
-            box-shadow: 5px 5px 0px 0px rgba(0, 0, 0, 0.1);
-        }
-
-        html.dark-mode body #loginModal .sketch-container {
-            box-shadow: 5px 5px 0px 0px rgba(0, 0, 0, 0.4);
-        }
-
-        #loginModal .modal-close {
-            font-family: 'Kalam', cursive;
-            font-size: 2.5rem;
-            color: var(--secondary-text-color);
-            position: absolute;
-            top: 10px;
-            right: 15px;
-        }
-
-        #loginModal .sketch-container h2 {
-            font-weight: 700;
-            font-size: 1.8rem;
-            color: var(--welcome-title-color);
-            border-bottom: none;
-            margin-bottom: 1rem;
-            margin-top: 0;
-        }
-
-        #loginModal .content-wrapper {
-            display: flex;
-            align-items: center;
-            gap: 2rem;
-            margin-block: 1rem;
-        }
-
-        #loginModal .icon-wrapper {
-            border: 5px solid #3498db;
-            border-radius: 50%;
-            padding: 1.5rem;
-            display: grid;
-            place-items: center;
-        }
-
-        #loginModal .login-icon-img {
-            display: block;
-            width: 80px;
-            height: 80px;
-            object-fit: contain;
-            border-radius: 50%;
-        }
-
-        #loginModal .login-form {
-            display: flex;
-            flex-direction: column;
-            text-align: left;
-            width: 100%;
-        }
-
-        #loginModal .login-form label {
-            margin-top: 1rem;
-            margin-bottom: 0.5rem;
-            font-size: 1.1rem;
-            font-weight: 700;
-            color: var(--secondary-text-color);
-        }
-
-        #loginModal .login-form input[type="text"],
-        #loginModal .login-form input[type="password"] {
-            border: 2px solid var(--border-color);
-            padding: 0.75rem;
-            font-family: 'Kalam', cursive;
-            font-size: 1.1rem;
-            width: 100%;
-            box-sizing: border-box;
-            border-radius: 10px 12px 8px 11px;
-            background: var(--bg-color);
-            color: var(--main-text-color);
-        }
-
-        html.dark-mode body #loginModal .login-form input[type="text"],
-        html.dark-mode body #loginModal .login-form input[type="password"] {
-            border-color: #555;
-        }
-
-        #loginModal .login-form input:focus {
-            outline: none;
-            box-shadow: 0 0 0 3px #3498db;
-        }
-
-        #loginModal button[type="submit"] {
-            border: 3px solid var(--main-text-color);
-            background: var(--card-bg-color);
-            color: var(--main-text-color);
-            padding: 0.75rem 1.5rem;
-            font-family: 'Kalam', cursive;
-            font-size: 1.2rem;
-            font-weight: 700;
-            cursor: pointer;
-            margin-top: 1.5rem;
-            align-self: center;
-            border-radius: 10px 12px 8px 11px;
-            transition: all 0.2s ease;
-        }
-
-        #loginModal button[type="submit"]:hover {
-            background: var(--bg-color);
-            transform: translateY(-2px);
-        }
-
-        #loginModal .form-links {
-            text-align: left;
-            margin-top: 0.5rem;
-        }
-
-        #loginModal .form-links a {
-            font-size: 0.9rem;
-            text-decoration: none;
-            color: #555;
-            cursor: pointer;
-        }
-
-        html.dark-mode body #loginModal .form-links a {
-            color: #aaa;
-        }
-
-        #loginModal .form-links a:hover {
-            text-decoration: underline;
-        }
-
-        #loginModal .sign-up {
-            margin-top: 1.5rem;
-            margin-bottom: 0;
-            font-size: 1rem;
-        }
-
-        #loginModal .sign-up a {
-            color: var(--main-text-color);
-            font-weight: 700;
-            text-decoration: underline;
-            text-underline-offset: 4px;
-            text-decoration-thickness: 2px;
-            cursor: pointer;
-        }
-
-        #loginModal .error,
-        #loginModal .success {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            font-weight: bold;
-            padding: 10px;
-            border-radius: 4px;
-            margin-bottom: 15px;
-            text-align: center;
-        }
-
-        #loginModal .error {
-            background-color: #fdd;
-            color: #c00;
-            border: 1px solid #f99;
-        }
-
-        #loginModal .success {
-            background-color: #d4edda;
-            color: #155724;
-            border: 1px solid #c3e6cb;
-        }
-
-        @media (max-width: 600px) {
-            #loginModal .content-wrapper {
-                flex-direction: column;
-                gap: 1rem;
-            }
-            #loginModal .icon-wrapper {
-                padding: 1rem;
-            }
-            #loginModal .login-icon-img {
-                width: 60px;
-                height: 60px;
-            }
-            #loginModal .sketch-container h2 {
-                font-size: 1.5rem;
-            }
-        }
-
-        #registerModal {
-            font-family: 'Kalam', cursive;
-        }
-
-        #registerModal .modal-container {
-            background: none;
-            box-shadow: none;
-            padding: 0;
-            max-width: 600px;
-        }
-
-        #registerModal .sketch-container {
-            background: var(--card-bg-color);
-            border: 3px solid var(--main-text-color);
-            padding: 2rem;
-            text-align: center;
-            width: 100%;
-            position: relative;
-            border-radius: 20px 18px 22px 19px;
-            box-shadow: 5px 5px 0px 0px rgba(0, 0, 0, 0.1);
-        }
-
-        html.dark-mode body #registerModal .sketch-container {
-            box-shadow: 5px 5px 0px 0px rgba(0, 0, 0, 0.4);
-        }
-
-        #registerModal .modal-close {
-            font-family: 'Kalam', cursive;
-            font-size: 2.5rem;
-            color: var(--secondary-text-color);
-        }
-
-        #registerModal h2 {
-            font-weight: 700;
-            font-size: 1.8rem;
-            color: var(--welcome-title-color);
-            border-bottom: none;
-            margin-bottom: 1rem;
-            margin-top: 0;
-        }
-
-        #registerModal .sketch-form {
-            display: flex;
-            flex-direction: column;
-            text-align: left;
-            width: 100%;
-            max-height: 60vh;
-            overflow-y: auto;
-            padding-right: 10px;
-        }
-
-        #registerModal .sketch-form label {
-            margin-top: 1rem;
-            margin-bottom: 0.5rem;
-            font-size: 1.1rem;
-            font-weight: 700;
-            color: var(--secondary-text-color);
-        }
-
-        #registerModal .sketch-form input[type="text"],
-        #registerModal .sketch-form input[type="email"],
-        #registerModal .sketch-form input[type="password"],
-        #registerModal .sketch-form select {
-            border: 2px solid var(--border-color);
-            padding: 0.75rem;
-            font-family: 'Kalam', cursive;
-            font-size: 1.1rem;
-            width: 100%;
-            box-sizing: border-box;
-            border-radius: 10px 12px 8px 11px;
-            background: var(--bg-color);
-            color: var(--main-text-color);
-        }
-
-        html.dark-mode body #registerModal .sketch-form input,
-        html.dark-mode body #registerModal .sketch-form select {
-            border-color: #555;
-        }
-
-        #registerModal .sketch-form input:focus,
-        #registerModal .sketch-form select:focus {
-            outline: none;
-            box-shadow: 0 0 0 3px #3498db;
-        }
-
-        #registerModal button[type="submit"] {
-            border: 3px solid var(--main-text-color);
-            background: var(--card-bg-color);
-            color: var(--main-text-color);
-            padding: 0.75rem 1.5rem;
-            font-family: 'Kalam', cursive;
-            font-size: 1.2rem;
-            font-weight: 700;
-            cursor: pointer;
-            margin-top: 1.5rem;
-            align-self: center;
-            border-radius: 10px 12px 8px 11px;
-            transition: all 0.2s ease;
-        }
-
-        #registerModal button[type="submit"]:hover {
-            background: var(--bg-color);
-            transform: translateY(-2px);
-        }
-
-        #registerModal .login-link {
-            margin-top: 1.5rem;
-            margin-bottom: 0;
-            font-size: 1rem;
-        }
-
-        #registerModal .login-link a {
-            color: var(--main-text-color);
-            font-weight: 700;
-            text-decoration: underline;
-            text-underline-offset: 4px;
-            text-decoration-thickness: 2px;
-            cursor: pointer;
-        }
-
-        #registerModal .error {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            font-weight: bold;
-            padding: 10px;
-            border-radius: 4px;
-            margin-bottom: 15px;
-            text-align: center;
-            background-color: #fdd;
-            color: #c00;
-            border: 1px solid #f99;
         }
     </style>
     

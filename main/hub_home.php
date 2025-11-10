@@ -276,6 +276,10 @@ if (isset($_SESSION['temp_user_id']) && isset($_SESSION['security_question']) &&
             justify-content: space-between;
             align-items: center;
             box-shadow: 0 2px 4px var(--shadow-color);
+            position: sticky;
+            top: 0;
+            z-index: 1001;
+            transition: background-color 0.3s;
         }
 
         .logo {
@@ -369,95 +373,6 @@ if (isset($_SESSION['temp_user_id']) && isset($_SESSION['security_question']) &&
             margin-right: 10px;
             width: 20px;
             text-align: center;
-        }
-
-        .main-content {
-            flex-grow: 1;
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            align-items: center;
-            text-align: center;
-            padding: 50px 20px;
-            position: relative;
-        }
-
-        .welcome-title {
-            font-size: 3.5em;
-            font-weight: 600;
-            color: var(--welcome-title-color);
-            margin-bottom: 10px;
-        }
-
-        .welcome-subtitle {
-            font-size: 1.2em;
-            color: #444;
-            margin-bottom: 40px;
-        }
-
-        html.dark-mode body .welcome-subtitle {
-            color: var(--secondary-text-color);
-        }
-
-        .continue-button {
-            padding: 15px 40px;
-            background: var(--accent-color);
-            color: white;
-            text-decoration: none;
-            border: 2px solid var(--accent-color-darker);
-            border-radius: 6px;
-            font-size: 1.2em;
-            font-weight: bold;
-            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.2);
-            transition: all 0.2s ease-in-out;
-            margin-top: 50px;
-        }
-
-        .continue-button:hover {
-            background: var(--accent-color-darker);
-            box-shadow: 0 6px 10px rgba(0, 0, 0, 0.25);
-            transform: translateY(-2px);
-        }
-
-        .wave-container {
-            position: absolute;
-            bottom: 0;
-            left: 0;
-            width: 100%;
-            height: 150px;
-            overflow: hidden;
-            z-index: 1;
-        }
-
-        .wave {
-            position: absolute;
-            width: 200%;
-            height: 200%;
-            background: var(--accent-color);
-            border-radius: 40%;
-            bottom: -150%;
-            left: -50%;
-            opacity: var(--wave-opacity);
-            animation: wave-motion 10s linear infinite;
-        }
-
-        .wave:nth-child(2) {
-            opacity: calc(var(--wave-opacity) / 1.5);
-            animation: wave-motion 15s linear infinite reverse;
-            bottom: -160%;
-            border-radius: 45%;
-        }
-
-        @keyframes wave-motion {
-            0% {
-                transform: translate(0, 0);
-            }
-            50% {
-                transform: translate(-25%, 5%);
-            }
-            100% {
-                transform: translate(0, 0);
-            }
         }
 
         .dark-mode-label {
@@ -629,70 +544,6 @@ if (isset($_SESSION['temp_user_id']) && isset($_SESSION['security_question']) &&
             opacity: 0.7;
         }
 
-        #loginModal {
-            font-family: 'Kalam', cursive;
-        }
-
-        #loginModal .modal-container {
-            background: none;
-            box-shadow: none;
-            padding: 0;
-            max-width: 700px;
-        }
-
-        #loginModal .sketch-container {
-            background: var(--card-bg-color);
-            border: 3px solid var(--main-text-color);
-            padding: 2rem;
-            text-align: center;
-            width: 100%;
-            position: relative;
-            border-radius: 20px 18px 22px 19px;
-            box-shadow: 5px 5px 0px 0px rgba(0, 0, 0, 0.1);
-        }
-
-        html.dark-mode body #loginModal .sketch-container {
-            box-shadow: 5px 5px 0px 0px rgba(0, 0, 0, 0.4);
-        }
-
-        #loginModal .modal-close {
-            font-family: 'Kalam', cursive;
-            font-size: 2.5rem;
-            color: var(--secondary-text-color);
-        }
-
-        #loginModal .sketch-container h2 {
-            font-weight: 700;
-            font-size: 1.8rem;
-            color: var(--welcome-title-color);
-            border-bottom: none;
-            margin-bottom: 1rem;
-            margin-top: 0;
-        }
-
-        #loginModal .content-wrapper {
-            display: flex;
-            align-items: center;
-            gap: 2rem;
-            margin-block: 1rem;
-        }
-
-        #loginModal .icon-wrapper {
-            border: 5px solid #3498db;
-            border-radius: 50%;
-            padding: 1.5rem;
-            display: grid;
-            place-items: center;
-        }
-
-        #loginModal .login-icon-img {
-            display: block;
-            width: 80px;
-            height: 80px;
-            object-fit: contain;
-            border-radius: 50%;
-        }
-
         #loginModal .login-form {
             display: flex;
             flex-direction: column;
@@ -700,170 +551,22 @@ if (isset($_SESSION['temp_user_id']) && isset($_SESSION['security_question']) &&
             width: 100%;
         }
 
-        #loginModal .login-form label {
-            margin-top: 1rem;
-            margin-bottom: 0.5rem;
-            font-size: 1.1rem;
-            font-weight: 700;
-            color: var(--secondary-text-color);
-        }
-
-        #loginModal .login-form input[type="text"],
-        #loginModal .login-form input[type="password"] {
-            border: 2px solid var(--border-color);
-            padding: 0.75rem;
-            font-family: 'Kalam', cursive;
-            font-size: 1.1rem;
-            width: 100%;
-            box-sizing: border-box;
-            border-radius: 10px 12px 8px 11px;
-            background: var(--bg-color);
-            color: var(--main-text-color);
-        }
-
-        html.dark-mode body #loginModal .login-form input[type="text"],
-        html.dark-mode body #loginModal .login-form input[type="password"] {
-            border-color: #555;
-        }
-
-        #loginModal .login-form input:focus {
-            outline: none;
-            box-shadow: 0 0 0 3px #3498db;
-        }
-
-        #loginModal button[type="submit"] {
-            border: 3px solid var(--main-text-color);
-            background: var(--card-bg-color);
-            color: var(--main-text-color);
-            padding: 0.75rem 1.5rem;
-            font-family: 'Kalam', cursive;
-            font-size: 1.2rem;
-            font-weight: 700;
-            cursor: pointer;
-            margin-top: 1.5rem;
-            align-self: center;
-            border-radius: 10px 12px 8px 11px;
-            transition: all 0.2s ease;
-        }
-
-        #loginModal button[type="submit"]:hover {
-            background: var(--bg-color);
-            transform: translateY(-2px);
-        }
-
         #loginModal .form-links {
-            text-align: left;
-            margin-top: 0.5rem;
+            text-align: right;
+            margin-top: -10px;
+            margin-bottom: 15px;
         }
 
         #loginModal .form-links a {
             font-size: 0.9rem;
             text-decoration: none;
-            color: #555;
+            color: var(--accent-color);
+            font-weight: bold;
             cursor: pointer;
-        }
-
-        html.dark-mode body #loginModal .form-links a {
-            color: #aaa;
         }
 
         #loginModal .form-links a:hover {
             text-decoration: underline;
-        }
-
-        #loginModal .sign-up {
-            margin-top: 1.5rem;
-            margin-bottom: 0;
-            font-size: 1rem;
-        }
-
-        #loginModal .sign-up a {
-            color: var(--main-text-color);
-            font-weight: 700;
-            text-decoration: underline;
-            text-underline-offset: 4px;
-            text-decoration-thickness: 2px;
-            cursor: pointer;
-        }
-
-        #loginModal .error,
-        #loginModal .success {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            font-weight: bold;
-            padding: 10px;
-            border-radius: 4px;
-            margin-bottom: 15px;
-            text-align: center;
-        }
-
-        #loginModal .error {
-            background-color: #fdd;
-            color: #c00;
-            border: 1px solid #f99;
-        }
-
-        #loginModal .success {
-            background-color: #d4edda;
-            color: #155724;
-            border: 1px solid #c3e6cb;
-        }
-
-        @media (max-width: 600px) {
-            #loginModal .content-wrapper {
-                flex-direction: column;
-                gap: 1rem;
-            }
-            #loginModal .icon-wrapper {
-                padding: 1rem;
-            }
-            #loginModal .login-icon-img {
-                width: 60px;
-                height: 60px;
-            }
-            #loginModal .sketch-container h2 {
-                font-size: 1.5rem;
-            }
-        }
-
-        #registerModal {
-            font-family: 'Kalam', cursive;
-        }
-
-        #registerModal .modal-container {
-            background: none;
-            box-shadow: none;
-            padding: 0;
-            max-width: 600px;
-        }
-
-        #registerModal .sketch-container {
-            background: var(--card-bg-color);
-            border: 3px solid var(--main-text-color);
-            padding: 2rem;
-            text-align: center;
-            width: 100%;
-            position: relative;
-            border-radius: 20px 18px 22px 19px;
-            box-shadow: 5px 5px 0px 0px rgba(0, 0, 0, 0.1);
-        }
-
-        html.dark-mode body #registerModal .sketch-container {
-            box-shadow: 5px 5px 0px 0px rgba(0, 0, 0, 0.4);
-        }
-
-        #registerModal .modal-close {
-            font-family: 'Kalam', cursive;
-            font-size: 2.5rem;
-            color: var(--secondary-text-color);
-        }
-
-        #registerModal h2 {
-            font-weight: 700;
-            font-size: 1.8rem;
-            color: var(--welcome-title-color);
-            border-bottom: none;
-            margin-bottom: 1rem;
-            margin-top: 0;
         }
 
         #registerModal .sketch-form {
@@ -875,86 +578,108 @@ if (isset($_SESSION['temp_user_id']) && isset($_SESSION['security_question']) &&
             overflow-y: auto;
             padding-right: 10px;
         }
+        
+        #forgotPasswordModal .btn {
+            background-color: #2ecc71;
+        }
+        #forgotPasswordModal .btn:hover {
+            background-color: #27ae60;
+        }
 
-        #registerModal .sketch-form label {
-            margin-top: 1rem;
-            margin-bottom: 0.5rem;
-            font-size: 1.1rem;
-            font-weight: 700;
+        #resetPasswordModal .btn {
+            background-color: #2ecc71;
+        }
+        #resetPasswordModal .btn:hover {
+            background-color: #27ae60;
+        }
+
+        .main-content {
+            flex-grow: 1;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+            padding: 50px 20px;
+            position: relative;
+        }
+
+        .welcome-title {
+            font-size: 3.5em;
+            font-weight: 600;
+            color: var(--welcome-title-color);
+            margin-bottom: 10px;
+        }
+
+        .welcome-subtitle {
+            font-size: 1.2em;
+            color: #444;
+            margin-bottom: 40px;
+        }
+
+        html.dark-mode body .welcome-subtitle {
             color: var(--secondary-text-color);
         }
 
-        #registerModal .sketch-form input[type="text"],
-        #registerModal .sketch-form input[type="email"],
-        #registerModal .sketch-form input[type="password"],
-        #registerModal .sketch-form select {
-            border: 2px solid var(--border-color);
-            padding: 0.75rem;
-            font-family: 'Kalam', cursive;
-            font-size: 1.1rem;
-            width: 100%;
-            box-sizing: border-box;
-            border-radius: 10px 12px 8px 11px;
-            background: var(--bg-color);
-            color: var(--main-text-color);
+        .continue-button {
+            padding: 15px 40px;
+            background: var(--accent-color);
+            color: white;
+            text-decoration: none;
+            border: 2px solid var(--accent-color-darker);
+            border-radius: 6px;
+            font-size: 1.2em;
+            font-weight: bold;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.2);
+            transition: all 0.2s ease-in-out;
+            margin-top: 50px;
         }
 
-        html.dark-mode body #registerModal .sketch-form input,
-        html.dark-mode body #registerModal .sketch-form select {
-            border-color: #555;
-        }
-
-        #registerModal .sketch-form input:focus,
-        #registerModal .sketch-form select:focus {
-            outline: none;
-            box-shadow: 0 0 0 3px #3498db;
-        }
-
-        #registerModal button[type="submit"] {
-            border: 3px solid var(--main-text-color);
-            background: var(--card-bg-color);
-            color: var(--main-text-color);
-            padding: 0.75rem 1.5rem;
-            font-family: 'Kalam', cursive;
-            font-size: 1.2rem;
-            font-weight: 700;
-            cursor: pointer;
-            margin-top: 1.5rem;
-            align-self: center;
-            border-radius: 10px 12px 8px 11px;
-            transition: all 0.2s ease;
-        }
-
-        #registerModal button[type="submit"]:hover {
-            background: var(--bg-color);
+        .continue-button:hover {
+            background: var(--accent-color-darker);
+            box-shadow: 0 6px 10px rgba(0, 0, 0, 0.25);
             transform: translateY(-2px);
         }
 
-        #registerModal .login-link {
-            margin-top: 1.5rem;
-            margin-bottom: 0;
-            font-size: 1rem;
+        .wave-container {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            height: 150px;
+            overflow: hidden;
+            z-index: 1;
         }
 
-        #registerModal .login-link a {
-            color: var(--main-text-color);
-            font-weight: 700;
-            text-decoration: underline;
-            text-underline-offset: 4px;
-            text-decoration-thickness: 2px;
-            cursor: pointer;
+        .wave {
+            position: absolute;
+            width: 200%;
+            height: 200%;
+            background: var(--accent-color);
+            border-radius: 40%;
+            bottom: -150%;
+            left: -50%;
+            opacity: var(--wave-opacity);
+            animation: wave-motion 10s linear infinite;
         }
 
-        #registerModal .error {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            font-weight: bold;
-            padding: 10px;
-            border-radius: 4px;
-            margin-bottom: 15px;
-            text-align: center;
-            background-color: #fdd;
-            color: #c00;
-            border: 1px solid #f99;
+        .wave:nth-child(2) {
+            opacity: calc(var(--wave-opacity) / 1.5);
+            animation: wave-motion 15s linear infinite reverse;
+            bottom: -160%;
+            border-radius: 45%;
+        }
+
+        @keyframes wave-motion {
+            0% {
+                transform: translate(0, 0);
+            }
+            50% {
+                transform: translate(-25%, 5%);
+            }
+            100% {
+                transform: translate(0, 0);
+            }
         }
     </style>
 
