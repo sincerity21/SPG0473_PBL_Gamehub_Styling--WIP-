@@ -815,8 +815,8 @@ $fallback_cover = 'uploads/placeholder.png';
 
 <?php
     
-    include '../../modals/main/logged_in/modal_change_username.php';
-    include '../../modals/main/logged_in/modal_change_password.php';
+    include '../../modals/main/logged_in/hub_profile_change_username.php';
+    include '../../modals/main/logged_in/hub_profile_change_password.php';
     
     include '../../modals/main/logged_in/hub_profile_game_details.php';
 ?>
