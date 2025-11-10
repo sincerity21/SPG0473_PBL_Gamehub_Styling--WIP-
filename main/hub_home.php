@@ -716,7 +716,7 @@ if (isset($_SESSION['temp_user_id']) && isset($_SESSION['security_question']) &&
     <div class="menu-divider"></div>
     
     <div class="menu-item dark-mode-label" onclick="toggleDarkMode()">
-        <span class="icon"><i class="fas fa-moon"></i></span>
+        <span class="icon"><i class="fas fa-moon" id="darkModeIcon"></i></span>
         <span id="darkModeText">Switch Dark Mode</span>
     </div>
     
@@ -752,16 +752,29 @@ if (isset($_SESSION['temp_user_id']) && isset($_SESSION['security_question']) &&
 
     
     const darkModeText = document.getElementById('darkModeText');
+    const darkModeIcon = document.getElementById('darkModeIcon');
     const localStorageKey = 'gamehubDarkMode';
     const htmlElement = document.documentElement; 
 
     function applyDarkMode(isDark) {
-        if (isDark) {
-            htmlElement.classList.add('dark-mode');
-            if (darkModeText) darkModeText.textContent = 'Switch Light Mode';
-        } else {
-            htmlElement.classList.remove('dark-mode');
-            if (darkModeText) darkModeText.textContent = 'Switch Dark Mode';
+    if (isDark) {
+        htmlElement.classList.add('dark-mode');
+
+        if (darkModeText) {
+            darkModeText.textContent = 'Switch Light Mode';
+        }
+        if (darkModeIcon) {
+            darkModeIcon.classList.replace('fa-moon', 'fa-sun');
+        }
+    } else {
+        htmlElement.classList.remove('dark-mode');
+
+        if (darkModeText) {
+            darkModeText.textContent = 'Switch Dark Mode';
+        }
+        if (darkModeIcon) {
+            darkModeIcon.classList.replace('fa-sun', 'fa-moon');
+        }
         }
     }
 
