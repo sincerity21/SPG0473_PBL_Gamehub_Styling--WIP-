@@ -2,9 +2,6 @@
 session_start();
 require '../hub_conn.php'; 
 
-$categories = selectAllGameCategories();
-$games = selectAllGamesWithCovers(); 
-
 $login_error = '';
 $register_error = '';
 $forgot_step1_error = '';
@@ -34,8 +31,7 @@ if ($_POST) {
                 header("Location: ../admin/user/hub_admin_user.php"); 
             } else {
                 $_SESSION['is_admin'] = false;
-                
-                header("Location: logged_in/hub_home_category_logged_in.php"); 
+                header("Location: logged_in/hub_home_logged_in.php");
             }
             exit(); 
         } else {
@@ -55,7 +51,7 @@ if ($_POST) {
         if (empty($username) || empty($email) || empty($password) || empty($answer)) {
             $register_error = "You must fill in all fields.";
         } else {
-             
+            
             $success = registerUser($username, $email, $password, $prompt, $answer);
             
             if ($success) {
@@ -186,15 +182,13 @@ if (isset($_SESSION['temp_user_id']) && isset($_SESSION['security_question']) &&
     }
 }
 
-
-$fallback_cover = 'uploads/placeholder.png'; 
 ?>
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>GameHub - Library</title>
+    <title>GameHub - About Us</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
     
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -267,11 +261,6 @@ $fallback_cover = 'uploads/placeholder.png';
         html.dark-mode body .header,
         html.dark-mode body .side-menu {
             background-color: var(--glass-bg-dark);
-        }
-        
-        html.dark-mode body .content-container {
-             background-color: transparent;
-             box-shadow: none;
         }
 
         body {
@@ -599,291 +588,110 @@ $fallback_cover = 'uploads/placeholder.png';
         }
 
         .content-container {
-            max-width: 1200px;
-            margin: 30px auto;
+            max-width: 1000px;
+            margin: 0 auto;
             padding: 30px;
         }
 
-        .category-title {
-            font-size: 1.5em;
+        .content-title {
+            font-size: 1.8em;
             font-weight: 600;
             color: var(--welcome-title-color);
             margin-top: 20px;
-            margin-bottom: 20px;
+            margin-bottom: 25px;
             text-align: left;
             border-bottom: 3px solid var(--accent-color);
             display: inline-block;
             padding-bottom: 5px;
         }
 
-        .category-filters {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 10px;
+        .about-section {
+            background-color: var(--card-bg-color);
+            padding: 25px;
+            border-radius: 8px;
+            box-shadow: 0 4px 8px var(--shadow-color);
             margin-bottom: 30px;
         }
 
-        .filter-btn {
-            padding: 8px 18px;
-            font-size: 1em;
-            font-weight: 500;
+        .about-section p {
+            font-size: 1.1em;
+            line-height: 1.7;
+            color: #444;
+        }
+
+        html.dark-mode body .about-section p {
             color: var(--secondary-text-color);
-            background-color: var(--bg-color);
-            border: 2px solid var(--border-color);
-            border-radius: 20px;
-            cursor: pointer;
-            transition: all 0.2s ease;
         }
 
-        .filter-btn:hover {
-            color: var(--accent-color);
-            border-color: var(--accent-color);
-        }
-
-        .filter-btn.active {
-            color: var(--accent-text-color, white);
-            background-color: var(--accent-color);
-            border-color: var(--accent-color);
-            font-weight: bold;
-        }
-
-        .game-grid {
+        .team-grid {
             display: grid;
             grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
             gap: 25px;
         }
 
-        .game-card {
-            background-color: var(--card-bg-color);
-            border-radius: 8px;
-            box-shadow: 0 4px 8px var(--shadow-color);
+        .team-card {
+            position: relative;
             overflow: hidden;
-            transition: transform 0.2s ease, box-shadow 0.2s ease;
-            text-decoration: none;
-            color: var(--main-text-color);
-            cursor: pointer;
+            border-radius: 12px;
+            box-shadow: 0 5px 15px var(--shadow-color);
         }
 
-        .game-card:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 8px 16px var(--shadow-color);
-        }
-
-        .game-card img {
+        .team-card img {
+            display: block;
             width: 100%;
             height: auto;
-            aspect-ratio: 460 / 215;
+            aspect-ratio: 1 / 1;
             object-fit: cover;
-            display: block;
-        }
-        
-        #gameDetailModal .modal-container {
-            max-width: 1000px;
-            background-color: var(--glass-bg-light);
-            backdrop-filter: blur(10px);
-        }
-        
-        html.dark-mode body #gameDetailModal .modal-container {
-             background-color: var(--glass-bg-dark);
+            transition: transform 0.4s ease;
         }
 
-        #gameDetailModal .modal-close {
+        .team-overlay {
             position: absolute;
-            top: 10px;
-            left: 15px;
-            right: auto;
-            font-size: 28px;
-            font-weight: bold;
-            color: var(--main-text-color);
-            background: none;
-            border: none;
-            cursor: pointer;
-            text-decoration: none;
-            line-height: 1;
-        }
-        
-        #gameDetailModal .modal-close:hover {
-            color: var(--accent-color);
-        }
-
-        .game-detail-layout {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 40px;
-            align-items: flex-start;
-            margin-top: 30px;
-        }
-
-        .image-slideshow {
-            position: relative;
-            width: 100%;
-            height: 0;
-            padding-bottom: 56.25%;
-            overflow: hidden;
-            border-radius: 8px;
-            background-color: var(--bg-color);
-            border: 1px solid var(--border-color);
-        }
-
-        .slide {
-            position: absolute;
-            top: 0;
+            bottom: 0;
             left: 0;
             width: 100%;
-            height: 100%;
-            opacity: 0;
-            transition: opacity 1s ease-in-out;
-        }
-
-        .slide.active {
-            opacity: 1;
-        }
-
-        .slide img {
-            width: 100%;
-            height: 100%;
-            object-fit: cover;
-        }
-
-        .slider-control {
-            position: absolute;
-            top: 50%;
-            transform: translateY(-50%);
-            background: rgba(0, 0, 0, 0.4);
+            background: rgba(52, 152, 219, 0.9);
             color: white;
-            border: none;
-            padding: 10px;
-            cursor: pointer;
-            z-index: 10;
-            font-size: 1.5em;
-        }
-
-        .slider-control:hover {
-            background: rgba(0, 0, 0, 0.6);
-        }
-
-        .prev {
-            left: 0;
-            border-radius: 0 5px 5px 0;
-        }
-
-        .next {
-            right: 0;
-            border-radius: 5px 0 0 5px;
-        }
-
-        .slide-indicators {
-            position: absolute;
-            bottom: 10px;
-            left: 50%;
-            transform: translateX(-50%);
-            z-index: 10;
-            display: flex;
-            gap: 5px;
-        }
-
-        .dot {
-            display: inline-block;
-            width: 10px;
-            height: 10px;
-            background: rgba(255, 255, 255, 0.5);
-            border-radius: 50%;
-            cursor: pointer;
-            transition: background 0.3s;
-        }
-
-        .dot.active {
-            background: white;
-        }
-
-        .game-info {
-            display: flex;
-            flex-direction: column;
-            gap: 15px;
-        }
-
-        .game-title-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: flex-start;
-            gap: 15px;
-        }
-
-        .game-title {
-            font-size: 2.5em;
-            font-weight: 600;
-            color: var(--welcome-title-color);
-            margin: 0;
-            line-height: 1.1;
-        }
-
-        .game-desc {
-            font-size: 1.1em;
-            color: var(--main-text-color);
-            line-height: 1.6;
-        }
-
-        html.dark-mode body .game-desc { 
-            color: var(--secondary-text-color); 
-        }
-
-        .favorite-icon {
-            font-size: 2.5em;
-            color: var(--border-color);
-            cursor: pointer;
-            transition: color 0.2s, transform 0.2s;
-        }
-
-        .favorite-icon.active {
-            color: var(--heart-color);
-        }
-
-        .star-rating {
-            font-size: 2em;
-            color: var(--star-color);
-        }
-
-        .star-rating .star {
-            cursor: pointer;
-            transition: transform 0.1s;
-        }
-
-        .star-rating .star:hover {
-            transform: scale(1.2);
-        }
-
-        .trailer-link,
-        .next-link {
-            display: inline-block;
-            padding: 12px 20px;
-            font-size: 1.1em;
-            font-weight: bold;
             text-align: center;
+            padding: 1.5rem 1rem;
+            box-sizing: border-box;
+            transform: translateY(100%);
+            transition: transform 0.4s ease-out;
+        }
+
+        .team-card:hover .team-overlay {
+            transform: translateY(0);
+        }
+
+        .team-card:hover img {
+            transform: scale(1.1);
+        }
+
+        .team-overlay h3 {
+            margin: 0 0 5px 0;
+            font-size: 1.5rem;
+            font-weight: 700;
+        }
+
+        .team-overlay p {
+            margin: 0 0 1rem 0;
+            font-size: 1rem;
+            font-style: italic;
+            color: white;
+            line-height: 1.4;
+        }
+
+        .social-links a {
+            color: white;
             text-decoration: none;
-            border-radius: 6px;
-            transition: all 0.2s;
+            font-size: 1.2rem;
+            margin: 0 8px;
+            transition: color 0.2s;
         }
 
-        .trailer-link {
-            background-color: var(--card-bg-color);
-            color: var(--accent-color);
-            border: 2px solid var(--accent-color);
-        }
-
-        .trailer-link:hover {
-            background-color: var(--accent-color);
-            color: white;
-        }
-
-        .next-link {
-            background-color: #8e44ad;
-            color: white;
-            border: 2px solid #8e44ad;
-            margin-top: 20px;
-        }
-
-        .next-link:hover {
-            background-color: #9b59b6;
+        .social-links a:hover {
+            color: #f4f4f4;
+            transform: scale(1.1);
         }
     </style>
 
@@ -909,8 +717,8 @@ $fallback_cover = 'uploads/placeholder.png';
 
 <div class="side-menu" id="sideMenu">
     <a href="hub_home.php"><span class="icon"><i class="fas fa-home"></i></span>Home</a>
-    <a href="hub_home_category.php" class="active"><span class="icon"><i class="fas fa-book-open"></i></span>Library</a> 
-    <a href="hub_main_about.php"><span class="icon"><i class="fas fa-info-circle"></i></span>About</a>
+    <a href="hub_category.php"><span class="icon"><i class="fas fa-book-open"></i></span>Library</a> 
+    <a href="hub_about.php" class="active"><span class="icon"><i class="fas fa-info-circle"></i></span>About</a>
     
     <div class="menu-divider"></div>
 
@@ -925,38 +733,58 @@ $fallback_cover = 'uploads/placeholder.png';
 
 <div class="content-container">
 
-    <h2 class="category-title">CHOOSE GAME CATEGORY</h2>
-
-    <div class="category-filters" id="categoryFilters">
-        <button class="filter-btn active" data-category="all">All</button>
-        <?php foreach ($categories as $category): ?>
-            <button class="filter-btn" data-category="<?php echo htmlspecialchars($category); ?>">
-                <?php echo htmlspecialchars(strtoupper($category)); ?>
-            </button>
-        <?php endforeach; ?>
+    <h2 class="content-title">About GameHub</h2>
+    <div class="about-section">
+        <p>
+            Welcome to GameHub, your ultimate destination for discovering, rating, and discussing your favorite video games. 
+            Our mission is to create a vibrant community of gamers who can share their passion and expertise.
+        </p>
+        <p>
+            Whether you're looking for the next big AAA title, a hidden indie gem, or just want to see how your
+            favorites stack up against the crowd, GameHub provides the tools you need.
+        </p>
     </div>
 
-    <div class="game-grid" id="gameGrid">
-        <?php if (!empty($games)): ?>
-            <?php foreach ($games as $game): ?>
-                <?php
-                $cover_path = !empty($game['cover_path']) ? $game['cover_path'] : $fallback_cover;
-                ?>
-                <a href="#" 
-                   class="game-card" 
-                   onclick="openGameModal(<?php echo $game['game_id']; ?>); return false;"
-                   data-category="<?php echo htmlspecialchars($game['game_category']); ?>">
-                    
-                    <img src="../<?php echo htmlspecialchars($cover_path); ?>" alt="<?php echo htmlspecialchars($game['game_name']); ?> Cover">
-                    
-                </a>
-            <?php endforeach; ?>
-        <?php else: ?>
-            <p>No games have been added to the hub yet.</p>
-        <?php endif; ?>
-    </div>
+    <h2 class="content-title">Our Team</h2>
+    <div class="team-grid">
 
-</div>
+        <div class="team-card">
+            <img src="../uploads/members/iman2.jpg" alt="Team Member 1">
+            <div class="team-overlay">
+                <h3>IMAN DARWISH</h3>
+                <p>Front-End, HTML</p>
+                <div class="social-links">
+                    <a href="https://instagram.com" target="_blank" aria-label="Instagram"><i class="fab fa-instagram"></i></a>
+                    <a href="https://linkedin.com" target="_blank" aria-label="LinkedIn"><i class="fab fa-linkedin-in"></i></a>
+                </div>
+            </div>
+        </div>
+
+        <div class="team-card">
+            <img src="../uploads/members/khairul.jpg" alt="Team Member 2">
+            <div class="team-overlay">
+                <h3>KHAIRULANWAR</h3>
+                <p>Design, GUI</p>
+                <div class="social-links">
+                    <a href="https://www.instagram.com/khainwar._/" target="_blank" aria-label="Instagram"><i class="fab fa-instagram"></i></a>
+                    <a href="https://www.linkedin.com/in/muhammad-khairulanwar-khairil-fitry-437513369/" target="_blank" aria-label="LinkedIn"><i class="fab fa-linkedin-in"></i></a>
+                </div>
+            </div>
+        </div>
+        
+        <div class="team-card">
+            <img src="../uploads/members/fawwaz3.jpg" alt="Team Member 3">
+            <div class="team-overlay">
+                <h3>FAWWAZ</h3>
+                <p>Back-End, Database</p>
+                <div class="social-links">
+                    <a href="https://github.com/sincerity21" target="_blank" aria-label="GitHub"><i class="fab fa-github"></i></a>
+                </div>
+            </div>
+        </div>
+        
+        </div>
+    </div>
 
 <?php
     
@@ -965,12 +793,9 @@ $fallback_cover = 'uploads/placeholder.png';
     include '../modals/hub_forgotpassword.php'; 
     include '../modals/hub_forgotpassword2.php'; 
     include '../modals/hub_resetpassword.php'; 
-    include '../modals/main/hub_game_detail_modal.php';
 ?>
 
 <script>
-    
-
     
     document.getElementById('menuToggle').addEventListener('click', function() {
         const menu = document.getElementById('sideMenu');
@@ -983,7 +808,6 @@ $fallback_cover = 'uploads/placeholder.png';
     const localStorageKey = 'gamehubDarkMode';
     const htmlElement = document.documentElement; 
 
-    
     function applyDarkMode(isDark) {
         if (isDark) {
             htmlElement.classList.add('dark-mode');
@@ -1006,50 +830,17 @@ $fallback_cover = 'uploads/placeholder.png';
         }
     }
 
-    
     function toggleDarkMode() {
-        
         const isDark = htmlElement.classList.contains('dark-mode');
-
-        
         applyDarkMode(!isDark);
-
-        
         localStorage.setItem(localStorageKey, !isDark ? 'dark' : 'light');
     }
 
-    
     (function loadButtonText() {
         const isDark = htmlElement.classList.contains('dark-mode');
         applyDarkMode(isDark);
     })();
-
-
     
-    document.addEventListener('DOMContentLoaded', function() {
-        const filterContainer = document.getElementById('categoryFilters');
-        const gameCards = document.querySelectorAll('#gameGrid .game-card');
-
-        if (filterContainer) {
-            filterContainer.addEventListener('click', function(e) {
-                if (!e.target.classList.contains('filter-btn')) {
-                    return;
-                }
-                const selectedCategory = e.target.getAttribute('data-category');
-                filterContainer.querySelector('.filter-btn.active').classList.remove('active');
-                e.target.classList.add('active');
-                gameCards.forEach(card => {
-                    const cardCategory = card.getAttribute('data-category');
-                    if (selectedCategory === 'all' || cardCategory === selectedCategory) {
-                        card.style.display = 'block'; 
-                    } else {
-                        card.style.display = 'none';  
-                    }
-                });
-            });
-        }
-    });
-
     
     function openModal(modalId) {
         const modal = document.getElementById(modalId);
@@ -1086,184 +877,6 @@ $fallback_cover = 'uploads/placeholder.png';
         
         openModal('forgotPasswordModal2');
     <?php endif; ?>
-    
-    
-    
-    let modalCurrentSlide = 0;
-    let modalSlides = [];
-    let modalDots = [];
-    let modalTotalSlides = 0;
-    let modalSlideTimer = null;
-    const modalFallbackImg = '../uploads/placeholder.png';
-    
-    
-    function initializeModalSlideshow(gallery) {
-        modalSlides = document.querySelectorAll('#modalSlideshowContent .slide');
-        modalDots = document.querySelectorAll('#modalSlideIndicators .dot');
-        modalTotalSlides = modalSlides.length;
-        modalCurrentSlide = 0;
-        
-        if (modalTotalSlides > 0) {
-            showModalSlide(0);
-        }
-        if (modalTotalSlides > 1) {
-            startModalAutoSlide();
-        } else {
-            stopModalAutoSlide();
-        }
-        
-        
-        modalDots.forEach((dot, index) => {
-            dot.addEventListener('click', () => {
-                stopModalAutoSlide();
-                showModalSlide(index);
-                startModalAutoSlide();
-            });
-        });
-    }
-
-    function showModalSlide(n) {
-        if (modalTotalSlides === 0) return;
-        modalCurrentSlide = (n + modalTotalSlides) % modalTotalSlides; 
-        modalSlides.forEach(slide => slide.classList.remove('active'));
-        modalDots.forEach(dot => dot.classList.remove('active'));
-        if (modalSlides[modalCurrentSlide]) modalSlides[modalCurrentSlide].classList.add('active');
-        if (modalDots[modalCurrentSlide]) modalDots[modalCurrentSlide].classList.add('active');
-    }
-
-    function modalChangeSlide(n) {
-        stopModalAutoSlide();
-        showModalSlide(modalCurrentSlide + n);
-        startModalAutoSlide();
-    }
-
-    function startModalAutoSlide() {
-        if (modalTotalSlides > 1 && !modalSlideTimer) {
-            modalSlideTimer = setInterval(() => showModalSlide(modalCurrentSlide + 1), 5000);
-        }
-    }
-
-    function stopModalAutoSlide() {
-        clearInterval(modalSlideTimer);
-        modalSlideTimer = null;
-    }
-
-    
-    function initializeModalFeedback() {
-        const favoriteIcon = document.getElementById('modalFavoriteIcon');
-        if (favoriteIcon) {
-            favoriteIcon.addEventListener('click', function() {
-                closeGameModal();
-                openModal('loginModal');
-            });
-        }
-        
-        const starRatingContainer = document.getElementById('modalStarRating');
-        if (starRatingContainer) {
-            const stars = starRatingContainer.querySelectorAll('.star');
-            stars.forEach(star => {
-                star.addEventListener('click', function() {
-                    closeGameModal();
-                    openModal('loginModal');
-                });
-            });
-        }
-    }
-    
-    
-    function populateGameModal(data) {
-        const game = data.details;
-        const gallery = data.gallery;
-
-        
-        document.getElementById('modalGameTitle').textContent = game.game_name;
-        document.getElementById('modalGameDesc').innerHTML = game.game_desc.replace(/\n/g, '<br>'); 
-        document.getElementById('modalTrailerLink').href = game.game_trailerLink;
-
-        
-        const favoriteIcon = document.getElementById('modalFavoriteIcon');
-        favoriteIcon.className = 'favorite-icon far fa-heart'; 
-        
-        const starContainer = document.getElementById('modalStarRating');
-        let starHTML = '';
-        for (let i = 1; i <= 5; i++) {
-            starHTML += `<i class="star far fa-star" data-value="${i}"></i>`;
-        }
-        starContainer.innerHTML = starHTML;
-
-        
-        const slideContainer = document.getElementById('modalSlideshowContent');
-        const indicatorContainer = document.getElementById('modalSlideIndicators');
-        let slideHTML = '';
-        let indicatorHTML = '';
-        
-        let imagesToUse = gallery.length > 0 ? gallery : [{ img_path: modalFallbackImg }];
-
-        imagesToUse.forEach((image, index) => {
-            const activeClass = (index === 0) ? 'active' : '';
-            slideHTML += `<div class="slide ${activeClass}">
-                            <img src="../${image.img_path}" alt="Game Screenshot">
-                          </div>`;
-            if (imagesToUse.length > 1) {
-                 indicatorHTML += `<span class="dot ${activeClass}" data-index="${index}"></span>`;
-            }
-        });
-        
-        slideContainer.innerHTML = slideHTML;
-        indicatorContainer.innerHTML = indicatorHTML;
-        
-        
-        initializeModalSlideshow();
-        initializeModalFeedback();
-    }
-
-    function setGameModalLoading() {
-        stopModalAutoSlide();
-        document.getElementById('modalGameTitle').textContent = 'Loading...';
-        document.getElementById('modalGameDesc').textContent = 'Loading game description...';
-        document.getElementById('modalTrailerLink').href = '#';
-        document.getElementById('modalFavoriteIcon').className = 'favorite-icon far fa-heart';
-        document.getElementById('modalStarRating').innerHTML = `
-            <i class="star far fa-star" data-value="1"></i>
-            <i class="star far fa-star" data-value="2"></i>
-            <i class="star far fa-star" data-value="3"></i>
-            <i class="star far fa-star" data-value="4"></i>
-            <i class="star far fa-star" data-value="5"></i>`;
-        document.getElementById('modalSlideshowContent').innerHTML = `
-            <div class="slide active">
-                <img src="${modalFallbackImg}" alt="Loading...">
-            </div>`;
-        document.getElementById('modalSlideIndicators').innerHTML = '';
-    }
-
-    async function openGameModal(gameId) {
-        openModal('gameDetailModal');
-        setGameModalLoading();
-        
-        try {
-            const response = await fetch(`../hub_fetch_game_details_public.php?game_id=${gameId}`);
-            if (!response.ok) {
-                throw new Error(`HTTP error! Status: ${response.status}`);
-            }
-            const data = await response.json();
-            if (data.error) {
-                 document.getElementById('modalGameTitle').textContent = 'Error';
-                 document.getElementById('modalGameDesc').textContent = data.error;
-            } else {
-                populateGameModal(data);
-            }
-        } catch (error) {
-            console.error('Failed to fetch game details:', error);
-            document.getElementById('modalGameTitle').textContent = 'Error';
-            document.getElementById('modalGameDesc').textContent = 'Could not load game details. Please try again.';
-        }
-    }
-    
-    
-    function closeGameModal() {
-        closeModal('gameDetailModal');
-        stopModalAutoSlide();
-    }
 </script>
 
 </body>

@@ -706,8 +706,8 @@ if (isset($_SESSION['temp_user_id']) && isset($_SESSION['security_question']) &&
 <div class="side-menu" id="sideMenu">
     
     <a href="hub_home.php" class="active"><span class="icon"><i class="fas fa-home"></i></span>Home</a>
-    <a href="hub_home_category.php"><span class="icon"><i class="fas fa-book-open"></i></span>Library</a>
-    <a href="hub_main_about.php"><span class="icon"><i class="fas fa-info-circle"></i></span>About</a>
+    <a href="hub_category.php"><span class="icon"><i class="fas fa-book-open"></i></span>Library</a>
+    <a href="hub_about.php"><span class="icon"><i class="fas fa-info-circle"></i></span>About</a>
 
     <div class="menu-divider"></div>
     
@@ -728,7 +728,7 @@ if (isset($_SESSION['temp_user_id']) && isset($_SESSION['security_question']) &&
         This is the GameHub, where you can rate your favourite games.
     </p>
 
-    <a href="hub_home_category.php" class="continue-button">START</a>
+    <a href="hub_category.php" class="continue-button">START</a>
 
     <div class="wave-container">
         <div class="wave"></div>

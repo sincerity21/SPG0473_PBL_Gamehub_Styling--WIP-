@@ -11,7 +11,7 @@
             <div class="message error"><?php echo $username_error; ?></div>
         <?php endif; ?>
         
-        <form method="POST" action="hub_main_profile.php">
+        <form method="POST" action="hub_profile.php">
             <input type="hidden" name="action" value="change_username">
             
             <div class="form-group">

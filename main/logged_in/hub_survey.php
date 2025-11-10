@@ -8,7 +8,7 @@ if (!isset($_SESSION['username']) || !isset($_SESSION['user_id'])) {
 }
 
 if (!isset($_GET['game_id']) || !is_numeric($_GET['game_id'])) {
-    header('Location: hub_home_category_logged_in.php'); 
+    header('Location: hub_category_logged_in.php'); 
     exit();
 }
 
@@ -18,7 +18,7 @@ $username = htmlspecialchars($_SESSION['username']);
 
 $game = selectGameByID($game_id);
 if (!$game) {
-    $game_link = 'hub_home_category_logged_in.php'; 
+    $game_link = 'hub_category_logged_in.php'; 
 } else {
     $game_link = $game['game_Link'];
 }
@@ -475,9 +475,9 @@ $current_site_open_feedback = $existing_site_feedback['feedback_site_open'] ?? '
 
 <div class="side-menu" id="sideMenu">
     <a href="hub_home_logged_in.php"><span class="icon"><i class="fas fa-home"></i></span>Home</a>
-    <a href="hub_home_category_logged_in.php" class="active"><span class="icon"><i class="fas fa-book-open"></i></span>Library</a> 
-    <a href="hub_main_profile.php"><span class="icon"><i class="fas fa-user-circle"></i></span>Profile</a>
-    <a href="hub_main_about_logged_in.php"><span class="icon"><i class="fas fa-info-circle"></i></span>About</a>
+    <a href="hub_category_logged_in.php" class="active"><span class="icon"><i class="fas fa-book-open"></i></span>Library</a> 
+    <a href="hub_profile.php"><span class="icon"><i class="fas fa-user-circle"></i></span>Profile</a>
+    <a href="hub_about_logged_in.php"><span class="icon"><i class="fas fa-info-circle"></i></span>About</a>
     <div class="menu-divider"></div>
     <div class="menu-item dark-mode-label" onclick="toggleDarkMode()">
         <span class="icon"><i class="fas fa-moon" id="darkModeIcon"></i></span>
@@ -492,7 +492,7 @@ $current_site_open_feedback = $existing_site_feedback['feedback_site_open'] ?? '
 
 <div class="content-container">
 
-    <a href="hub_home_category_logged_in.php" class="back-link">
+    <a href="hub_category_logged_in.php" class="back-link">
         <i class="fas fa-chevron-left"></i> Back to Game Detail
     </a>
 
