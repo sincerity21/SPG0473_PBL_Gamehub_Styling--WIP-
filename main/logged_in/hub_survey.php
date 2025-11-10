@@ -145,7 +145,7 @@ $current_site_open_feedback = $existing_site_feedback['feedback_site_open'] ?? '
         html.dark-mode body .side-menu {
             background-color: var(--glass-bg-dark);
         }
-
+        
         html.dark-mode body .content-container,
         html.dark-mode body .modal-container {
              background-color: var(--glass-bg-dark);
@@ -281,11 +281,6 @@ $current_site_open_feedback = $existing_site_feedback['feedback_site_open'] ?? '
             padding-bottom: 10px;
             margin-top: 0;
             margin-bottom: 25px;
-        }
-
-        .section-divider {
-             margin-top: 40px;
-             margin-bottom: 10px;
         }
 
         .form-group {
@@ -538,9 +533,8 @@ $current_site_open_feedback = $existing_site_feedback['feedback_site_open'] ?? '
             <textarea id="open_feedback" name="open_feedback" placeholder="Share your thoughts..." required><?php echo htmlspecialchars($current_open_feedback); ?></textarea>
         </div>
 
-        <hr class="section-divider">
-
-        <h2>Site Feedback</h2>
+        
+        <h2 style="margin-top: 40px;">Site Feedback</h2>
 
         <div class="form-group">
             <label>How satisfied are you with the site?</label>
