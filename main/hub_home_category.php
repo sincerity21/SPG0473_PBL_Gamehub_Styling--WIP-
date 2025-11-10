@@ -600,7 +600,7 @@ $fallback_cover = 'uploads/placeholder.png';
 
         .content-container {
             max-width: 1200px;
-            margin: 0 auto;
+            margin: 30px auto;
             padding: 30px;
         }
 

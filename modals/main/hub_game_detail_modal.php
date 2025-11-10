@@ -40,10 +40,6 @@
                 <a href="#" class="trailer-link" id="modalTrailerLink" target="_blank">
                     <i class="fab fa-youtube"></i> Watch the Trailer (on YouTube)
                 </a>
-                
-                <a href="#" class="trailer-link" id="modalGameLink" target="_blank" style="border-color: #2ecc71; color: #2ecc71;">
-                    <i class="fas fa-play-circle"></i> Play The Game Now!
-                </a>
 
                 <a href="#" class="next-link" onclick="closeGameModal(); openModal('loginModal');">
                     LOGIN TO CONTINUE
