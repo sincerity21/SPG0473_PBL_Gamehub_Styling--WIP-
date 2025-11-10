@@ -2,15 +2,13 @@
 session_start();
 require '../../hub_conn.php'; 
 
-// --- 1. Authentication & Authorization ---
 if (!isset($_SESSION['username']) || !isset($_SESSION['user_id'])) {
     header('Location: ../../hub_login.php');
     exit();
 }
 
-// --- 2. Get and Validate Game ID ---
 if (!isset($_GET['game_id']) || !is_numeric($_GET['game_id'])) {
-    header('Location: hub_home_category_logged_in.php'); // Redirect if no valid game ID
+    header('Location: hub_home_category_logged_in.php'); 
     exit();
 }
 
@@ -18,28 +16,26 @@ $game_id = (int)$_GET['game_id'];
 $user_id = (int)$_SESSION['user_id'];
 $username = htmlspecialchars($_SESSION['username']);
 
-// --- 3. Fetch All Data ---
 
-// Get main game details (name, desc, trailer)
 $game = selectGameByID($game_id);
 
 if (!$game) {
-    // If game not found, redirect back
+    
     header('Location: hub_home_category_logged_in.php');
     exit();
 }
 
-// Get gallery images for the slideshow
+
 $gallery_images = selectGameGalleryImages($game_id);
 
-// Get this user's feedback for this game
+
 $feedback = selectUserGameFeedback($user_id, $game_id);
 
-// Set initial states for icons
+
 $current_rating = $feedback['game_rating'] ?? 0;
 $is_favorite = $feedback['favorite_game'] ?? 0;
 
-// Fallback image if gallery is empty
+
 $fallback_path = 'uploads/placeholder.png';
 if (empty($gallery_images)) {
     $gallery_images[] = ['img_path' => $fallback_path];
@@ -53,7 +49,6 @@ if (empty($gallery_images)) {
     <title><?php echo htmlspecialchars($game['game_name']); ?> - GameHub</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
     <style>
-        /* --- 1. CSS Variables for Theming (from hub_home_logged_in.php) --- */
         :root {
             --bg-color: #f4f7f6;
             --main-text-color: #333;
@@ -62,14 +57,10 @@ if (empty($gallery_images)) {
             --shadow-color: rgba(0, 0, 0, 0.05);
             --border-color: #ddd;
             --welcome-title-color: #2c3e50;
-            
-            /* === MODIFICATION 1: Standardized Accent & Feedback Colors === */
             --accent-color: #9c1809ff;
             --accent-color-darker: #801407;
-            --star-color: #f39c12; /* Always yellow */
-            --heart-color: #e74c3c; /* Always red */
-            
-            /* === MODIFICATION 2: Added Glass Colors === */
+            --star-color: #f39c12;
+            --heart-color: #e74c3c;
             --glass-bg-light: rgba(255, 255, 255, 0.7);
             --glass-bg-dark: rgba(30, 30, 30, 0.7);
         }
@@ -82,59 +73,63 @@ if (empty($gallery_images)) {
             --shadow-color: rgba(0, 0, 0, 0.4);
             --border-color: #444;
             --welcome-title-color: #ecf0f1;
-            
-            /* === MODIFICATION 3: Standardized Dark Mode Accent === */
             --accent-color: #f39c12;
             --accent-color-darker: #c87f0a;
         }
 
-        /* === MODIFICATION 4: Added Background Image Styles === */
         .background-image {
             position: fixed;
-            top: -10px; 
+            top: -10px;
             left: -10px;
             width: calc(100% + 20px);
             height: calc(100% + 20px);
-            z-index: -1; 
+            z-index: -1;
             background-size: cover;
             background-position: center;
             filter: blur(5px);
             transition: opacity 0.5s ease-in-out;
             background-color: var(--bg-color);
         }
+
         #bg-light {
             background-image: url('../../uploads/home/prototype.jpg');
-            opacity: 1; 
+            opacity: 1;
         }
+
         #bg-dark {
             background-image: url('../../uploads/home/darksouls.jpg');
-            opacity: 0; 
+            opacity: 0;
         }
+
         html.dark-mode body #bg-light {
-            opacity: 0; 
+            opacity: 0;
         }
+
         html.dark-mode body #bg-dark {
-            opacity: 1; 
+            opacity: 1;
         }
         
-        /* === MODIFICATION 5: Added Dark Mode Glass Override === */
         html.dark-mode body .header,
         html.dark-mode body .side-menu {
-            background-color: var(--glass-bg-dark); /* Dark glass */
+            background-color: var(--glass-bg-dark);
         }
+
         html.dark-mode body .content-container {
              background-color: var(--glass-bg-dark);
         }
-        /* === END MODIFICATION 5 === */
 
+        body { 
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; 
+            margin: 0; 
+            padding: 0; 
+            color: var(--main-text-color); 
+            min-height: 100vh; 
+            transition: background-color 0.3s, color 0.3s; 
+        }
 
-        /* --- 2. Base & Menu Styles (from hub_home_category_logged_in.php) --- */
-        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; margin: 0; padding: 0; color: var(--main-text-color); min-height: 100vh; transition: background-color 0.3s, color 0.3s; }
-        
         .header { 
-            /* background-color: var(--card-bg-color); */ /* OLD */
-            background-color: var(--glass-bg-light); /* NEW */
-            backdrop-filter: blur(10px); /* NEW */
+            background-color: var(--glass-bg-light);
+            backdrop-filter: blur(10px);
             padding: 15px 30px; 
             display: flex; 
             justify-content: space-between; 
@@ -143,56 +138,103 @@ if (empty($gallery_images)) {
             position: sticky; 
             top: 0; 
             z-index: 1001; 
-            transition: background-color 0.3s; /* NEW */
+            transition: background-color 0.3s;
         }
-        .logo { font-size: 24px; font-weight: 700; color: var(--accent-color); text-decoration: none; transition: color 0.3s; }
-        .menu-toggle { background: none; border: none; cursor: pointer; font-size: 24px; color: var(--main-text-color); padding: 5px; }
-        
+
+        .logo { 
+            font-size: 24px; 
+            font-weight: 700; 
+            color: var(--accent-color); 
+            text-decoration: none; 
+            transition: color 0.3s; 
+        }
+
+        .menu-toggle { 
+            background: none; 
+            border: none; 
+            cursor: pointer; 
+            font-size: 24px; 
+            color: var(--main-text-color); 
+            padding: 5px; 
+        }
+
         .side-menu { 
             position: fixed; 
             top: 60px; 
             right: 0; 
             width: 220px; 
-            /* background-color: var(--card-bg-color); */ /* OLD */
-            background-color: var(--glass-bg-light); /* NEW */
-            backdrop-filter: blur(10px); /* NEW */
+            background-color: var(--glass-bg-light);
+            backdrop-filter: blur(10px);
             box-shadow: -4px 4px 8px var(--shadow-color); 
             border-radius: 8px 0 8px 8px; 
             padding: 10px 0; 
             z-index: 1000; 
             transform: translateX(100%); 
-            transition: transform 0.3s ease-in-out, background-color 0.3s; /* MODIFIED */
+            transition: transform 0.3s ease-in-out, background-color 0.3s;
         }
-        .side-menu.open { transform: translateX(0); }
-        .side-menu a, .menu-item { display: block; padding: 12px 20px; color: var(--main-text-color); text-decoration: none; transition: background-color 0.2s; cursor: pointer; }
-        
-        /* === MODIFICATION 6: Standardized Hover/Active Styles === */
-        .side-menu a:hover, .menu-item:hover { 
+
+        .side-menu.open { 
+            transform: translateX(0); 
+        }
+
+        .side-menu a, 
+        .menu-item { 
+            display: block; 
+            padding: 12px 20px; 
+            color: var(--main-text-color); 
+            text-decoration: none; 
+            transition: background-color 0.2s; 
+            cursor: pointer; 
+        }
+
+        .side-menu a:hover, 
+        .menu-item:hover { 
             background-color: var(--bg-color); 
             color: var(--accent-color); 
         }
+
         .side-menu a.active { 
             background-color: var(--accent-color); 
             color: white; 
             font-weight: bold; 
         }
+
         .side-menu a.active:hover { 
             background-color: var(--accent-color);
-            filter: brightness(0.85);
+            filter: brightness(0.85); 
         }
-        /* === END MODIFICATION 6 === */
         
-        .menu-divider { border-top: 1px solid var(--secondary-text-color); margin: 5px 0; }
-        .logout-link { color: #e74c3c !important; font-weight: bold; }
-        .icon { margin-right: 10px; width: 20px; text-align: center; }
-        .dark-mode-label { display: flex; justify-content: space-between; align-items: center; user-select: none; }
+        .menu-divider { 
+            border-top: 1px solid var(--secondary-text-color); 
+            margin: 5px 0; 
+        }
+
+        .logout-link { 
+            color: #e74c3c !important; 
+            font-weight: bold; 
+        }
         
-        /* --- 3. Page Layout (Sketch) --- */
+        .logout-link:hover {
+             background-color: #4e2925; 
+        }
+
+        .icon { 
+            margin-right: 10px; 
+            width: 20px; 
+            text-align: center; 
+        }
+
+        .dark-mode-label { 
+            display: flex; 
+            justify-content: space-between; 
+            align-items: center; 
+            user-select: none; 
+        }
+        
         .content-container {
             max-width: 1000px; 
-            margin: 30px auto; /* MODIFIED: Added margin-top */
+            margin: 30px auto;
             padding: 30px;
-            /* === MODIFICATION 7: Added Glass Container === */
             background-color: var(--glass-bg-light);
             backdrop-filter: blur(10px);
             border-radius: 8px;
@@ -202,45 +244,106 @@ if (empty($gallery_images)) {
 
         .game-detail-layout {
             display: grid;
-            grid-template-columns: 1fr 1fr; /* 50/50 split */
+            grid-template-columns: 1fr 1fr;
             gap: 40px;
             align-items: flex-start;
         }
         
-        /* --- 4. Left Column: Slideshow (from hub_games_view.php) --- */
         .image-slideshow {
             position: relative;
             width: 100%;
             height: 0;
-            padding-bottom: 56.25%; /* 16:9 Aspect Ratio */
+            padding-bottom: 56.25%;
             overflow: hidden;
             border-radius: 8px;
             background-color: var(--bg-color);
             border: 1px solid var(--border-color);
         }
-        .slide { position: absolute; top: 0; left: 0; width: 100%; height: 100%; opacity: 0; transition: opacity 1s ease-in-out; }
-        .slide.active { opacity: 1; }
-        .slide img { width: 100%; height: 100%; object-fit: cover; }
-        .slider-control { position: absolute; top: 50%; transform: translateY(-50%); background: rgba(0, 0, 0, 0.4); color: white; border: none; padding: 10px; cursor: pointer; z-index: 10; font-size: 1.5em; }
-        .slider-control:hover { background: rgba(0, 0, 0, 0.6); }
-        .prev { left: 0; border-radius: 0 5px 5px 0; }
-        .next { right: 0; border-radius: 5px 0 0 5px; }
-        .slide-indicators { position: absolute; bottom: 10px; left: 50%; transform: translateX(-50%); z-index: 10; display: flex; gap: 5px; }
-        .dot { display: inline-block; width: 10px; height: 10px; background: rgba(255, 255, 255, 0.5); border-radius: 50%; cursor: pointer; transition: background 0.3s; }
-        .dot.active { background: white; }
 
-        /* --- 5. Right Column: Game Info (Sketch) --- */
+        .slide { 
+            position: absolute; 
+            top: 0; 
+            left: 0; 
+            width: 100%; 
+            height: 100%; 
+            opacity: 0; 
+            transition: opacity 1s ease-in-out; 
+        }
+
+        .slide.active { 
+            opacity: 1; 
+        }
+
+        .slide img { 
+            width: 100%; 
+            height: 100%; 
+            object-fit: cover; 
+        }
+
+        .slider-control { 
+            position: absolute; 
+            top: 50%; 
+            transform: translateY(-50%); 
+            background: rgba(0, 0, 0, 0.4); 
+            color: white; 
+            border: none; 
+            padding: 10px; 
+            cursor: pointer; 
+            z-index: 10; 
+            font-size: 1.5em; 
+        }
+
+        .slider-control:hover { 
+            background: rgba(0, 0, 0, 0.6); 
+        }
+
+        .prev { 
+            left: 0; 
+            border-radius: 0 5px 5px 0; 
+        }
+
+        .next { 
+            right: 0; 
+            border-radius: 5px 0 0 5px; 
+        }
+
+        .slide-indicators { 
+            position: absolute; 
+            bottom: 10px; 
+            left: 50%; 
+            transform: translateX(-50%); 
+            z-index: 10; 
+            display: flex; 
+            gap: 5px; 
+        }
+
+        .dot { 
+            display: inline-block; 
+            width: 10px; 
+            height: 10px; 
+            background: rgba(255, 255, 255, 0.5); 
+            border-radius: 50%; 
+            cursor: pointer; 
+            transition: background 0.3s; 
+        }
+
+        .dot.active { 
+            background: white; 
+        }
+
         .game-info {
             display: flex;
             flex-direction: column;
             gap: 15px;
         }
+
         .game-title-header {
             display: flex;
             justify-content: space-between;
             align-items: flex-start;
             gap: 15px;
         }
+
         .game-title {
             font-size: 2.5em;
             font-weight: 600;
@@ -248,39 +351,41 @@ if (empty($gallery_images)) {
             margin: 0;
             line-height: 1.1;
         }
+
         .game-desc {
             font-size: 1.1em;
             color: var(--secondary-text-color);
             line-height: 1.6;
         }
 
-        /* Heart Icon */
         .favorite-icon {
             font-size: 2.5em;
-            color: var(--border-color); /* Default color */
+            color: var(--border-color);
             cursor: pointer;
             transition: color 0.2s, transform 0.2s;
         }
+
         .favorite-icon.active {
-            color: var(--heart-color); /* Use variable */
+            color: var(--heart-color);
             transform: scale(1.1);
         }
 
-        /* Star Rating */
         .star-rating {
             font-size: 2em;
-            color: var(--star-color); /* Use variable */
+            color: var(--star-color);
         }
+
         .star-rating .star {
             cursor: pointer;
             transition: transform 0.1s;
         }
+
         .star-rating .star:hover {
             transform: scale(1.2);
         }
 
-        /* Trailer & Next Buttons */
-        .trailer-link, .next-link {
+        .trailer-link, 
+        .next-link {
             display: inline-block;
             padding: 12px 20px;
             font-size: 1.1em;
@@ -290,26 +395,29 @@ if (empty($gallery_images)) {
             border-radius: 6px;
             transition: all 0.2s;
         }
+
         .trailer-link {
             background-color: var(--card-bg-color);
             color: var(--accent-color);
             border: 2px solid var(--accent-color);
         }
+
         .trailer-link:hover {
             background-color: var(--accent-color);
             color: white;
         }
+
         .next-link {
-            background-color: #8e44ad; /* Next button color */
+            background-color: #8e44ad;
             color: white;
             border: 2px solid #8e44ad;
             margin-top: 20px;
         }
+
         .next-link:hover {
             background-color: #9b59b6;
         }
         
-        /* Back link */
         .back-link {
             display: inline-block;
             margin-bottom: 20px;
@@ -317,7 +425,10 @@ if (empty($gallery_images)) {
             text-decoration: none;
             font-weight: 600;
         }
-        .back-link:hover { text-decoration: underline; }
+
+        .back-link:hover { 
+            text-decoration: underline; 
+        }
 
     </style>
 
@@ -422,18 +533,16 @@ if (empty($gallery_images)) {
 
 <script>
     
-
-    // --- Side Menu ---
     document.getElementById('menuToggle').addEventListener('click', function() {
         document.getElementById('sideMenu').classList.toggle('open');
     });
 
-    // --- Updated Dark Mode Logic ---
+    
     const darkModeText = document.getElementById('darkModeText');
     const localStorageKey = 'gamehubDarkMode';
-    const htmlElement = document.documentElement; // Target the <html> tag
+    const htmlElement = document.documentElement; 
 
-    // This function now applies the class to <html> AND updates the button text
+    
     function applyDarkMode(isDark) {
         if (isDark) {
             htmlElement.classList.add('dark-mode');
@@ -444,26 +553,25 @@ if (empty($gallery_images)) {
         }
     }
 
-    // This function toggles the mode
+    
     function toggleDarkMode() {
-        // Check the class on the <html> tag
+        
         const isDark = htmlElement.classList.contains('dark-mode');
 
-        // Toggle the state
+        
         applyDarkMode(!isDark);
 
-        // Save preference to local storage
+        
         localStorage.setItem(localStorageKey, !isDark ? 'dark' : 'light');
     }
 
-    // This function runs on page load to set the *button text* correctly.
-    // The class itself was already set by the script in the <head>.
+    
     (function loadButtonText() {
         const isDark = htmlElement.classList.contains('dark-mode');
         applyDarkMode(isDark);
     })();
 
-    // --- 2. Slideshow Logic (from hub_games_view.php) ---
+    
     let currentSlide = 0;
     const slides = document.querySelectorAll('#slideshow-content .slide');
     const dots = document.querySelectorAll('#slide-indicators .dot');
@@ -472,7 +580,7 @@ if (empty($gallery_images)) {
 
     function showSlide(n) {
         if (totalSlides === 0) return;
-        currentSlide = (n + totalSlides) % totalSlides; // Wraps around
+        currentSlide = (n + totalSlides) % totalSlides; 
         slides.forEach(slide => slide.classList.remove('active'));
         dots.forEach(dot => dot.classList.remove('active'));
         if (slides[currentSlide]) slides[currentSlide].classList.add('active');
@@ -498,9 +606,7 @@ if (empty($gallery_images)) {
     });
 
 
-    // --- 3. NEW: Feedback (Heart/Stars) AJAX Logic ---
-
-    // Generic function to send feedback updates
+    
     async function sendFeedback(gameId, feedbackData) {
         try {
             const response = await fetch('../../hub_update_feedback.php', {
@@ -511,47 +617,45 @@ if (empty($gallery_images)) {
                 },
                 body: JSON.stringify({
                     game_id: gameId,
-                    ...feedbackData // e.g., { rating: 4 } or { favorite: 1 }
+                    ...feedbackData 
                 })
             });
 
             if (!response.ok) {
                 console.error('Feedback update failed:', response.statusText);
             }
-            // You can optionally handle the JSON response here
-            // const result = await response.json();
-            // console.log(result.message);
+            
 
         } catch (error) {
             console.error('Error sending feedback:', error);
         }
     }
 
-    // --- Favorite (Heart) Logic ---
+    
     const favoriteIcon = document.getElementById('favoriteIcon');
     if (favoriteIcon) {
         favoriteIcon.addEventListener('click', function() {
             const gameId = this.getAttribute('data-game-id');
             const isNowActive = !this.classList.contains('active');
             
-            // Toggle visual state immediately
-            this.classList.toggle('active');
-            this.classList.toggle('fas'); // Toggle solid icon
-            this.classList.toggle('far'); // Toggle regular icon
             
-            // Send update to server
+            this.classList.toggle('active');
+            this.classList.toggle('fas'); 
+            this.classList.toggle('far'); 
+            
+            
             const favoriteValue = isNowActive ? 1 : 0;
             sendFeedback(gameId, { favorite: favoriteValue });
         });
     }
 
-    // --- Star Rating Logic ---
+    
     const starRatingContainer = document.getElementById('starRating');
     if (starRatingContainer) {
         const stars = starRatingContainer.querySelectorAll('.star');
         const gameId = starRatingContainer.getAttribute('data-game-id');
 
-        // Function to visually update stars
+        
         function updateStars(rating) {
             stars.forEach(star => {
                 const starValue = parseInt(star.getAttribute('data-value'));
@@ -565,15 +669,15 @@ if (empty($gallery_images)) {
             });
         }
 
-        // Add click event to each star
+        
         stars.forEach(star => {
             star.addEventListener('click', function() {
                 const ratingValue = parseInt(this.getAttribute('data-value'));
                 
-                // Update visual state
+                
                 updateStars(ratingValue);
                 
-                // Send update to server
+                
                 sendFeedback(gameId, { rating: ratingValue });
             });
         });

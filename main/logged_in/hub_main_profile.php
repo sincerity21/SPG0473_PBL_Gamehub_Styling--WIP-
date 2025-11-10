@@ -2,7 +2,6 @@
 session_start();
 require '../../hub_conn.php'; 
 
-// --- 1. Authentication & Authorization ---
 if (!isset($_SESSION['username']) || !isset($_SESSION['user_id'])) {
     header('Location: ../../hub_login.php');
     exit();
@@ -10,18 +9,16 @@ if (!isset($_SESSION['username']) || !isset($_SESSION['user_id'])) {
 
 $user_id = (int)$_SESSION['user_id'];
 $username = htmlspecialchars($_SESSION['username']);
-$email = htmlspecialchars($_SESSION['email']); // Get email from session
+$email = htmlspecialchars($_SESSION['email']); 
 
-// --- 2. Modal Error/Success Variables ---
 $username_error = '';
 $username_success = '';
 $password_error = '';
 $password_success = '';
 
-// --- 3. Handle Form Submissions ---
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action'])) {
 
-    // --- Handle Change Username ---
+    
     if ($_POST['action'] === 'change_username') {
         $new_username = $_POST['new_username'] ?? '';
         $current_password = $_POST['current_password'] ?? '';
@@ -32,14 +29,14 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action'])) {
             $result = updateUsername($user_id, $new_username, $current_password);
             if ($result === "success") {
                 $username_success = "Username updated successfully!";
-                $username = htmlspecialchars($new_username); // Update username on the page
+                $username = htmlspecialchars($new_username); 
             } else {
-                $username_error = $result; // Show the error from the function
+                $username_error = $result; 
             }
         }
     }
 
-    // --- Handle Change Password ---
+    
     if ($_POST['action'] === 'change_password') {
         $current_password = $_POST['current_password'] ?? '';
         $new_password = $_POST['new_password'] ?? '';
@@ -56,15 +53,15 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action'])) {
             if ($result === "success") {
                 $password_success = "Password updated successfully!";
             } else {
-                $password_error = $result; // Show the error
+                $password_error = $result; 
             }
         }
     }
 }
 
-// --- 4. Fetch Game Data ---
+
 $games_list = selectUserInteractedGames($user_id);
-$fallback_cover = 'uploads/placeholder.png'; // Fallback for games without covers
+$fallback_cover = 'uploads/placeholder.png'; 
 
 ?>
 <!DOCTYPE html>
@@ -75,7 +72,6 @@ $fallback_cover = 'uploads/placeholder.png'; // Fallback for games without cover
     <title>My Profile - GameHub</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
     <style>
-        /* --- 1. CSS Variables for Theming --- */
         :root {
             --bg-color: #f4f7f6;
             --main-text-color: #333;
@@ -93,17 +89,12 @@ $fallback_cover = 'uploads/placeholder.png'; // Fallback for games without cover
             --error-bg: #f8d7da;
             --error-text: #721c24;
             --error-border: #f5c6cb;
-
-            /* === NEW: Glass Colors === */
             --glass-bg-light: rgba(255, 255, 255, 0.7);
             --glass-bg-dark: rgba(30, 30, 30, 0.7);
-
-            /* --- NEW: Added star/heart colors --- */
             --star-color: #f39c12;
             --heart-color: #e74c3c;
         }
         
-        /* --- 2. Dark Mode Fix --- */
         html.dark-mode body {
             --bg-color: #121212; 
             --main-text-color: #f4f4f4; 
@@ -123,66 +114,55 @@ $fallback_cover = 'uploads/placeholder.png'; // Fallback for games without cover
             --error-border: #5c2a30;
         }
 
-        /* === NEW BACKGROUND IMAGE STYLES === */
         .background-image {
             position: fixed;
-            top: -10px; /* Overscan to hide blur edges */
+            top: -10px;
             left: -10px;
             width: calc(100% + 20px);
             height: calc(100% + 20px);
-            z-index: -1; /* Behind all content */
-            
+            z-index: -1;
             background-size: cover;
             background-position: center;
             filter: blur(5px);
             transition: opacity 0.5s ease-in-out;
-            background-color: var(--bg-color); /* Fallback */
+            background-color: var(--bg-color);
         }
 
-        /* 1. Light Mode Image */
         #bg-light {
-            /* --- IMPORTANT: SET YOUR IMAGE PATH --- */
-            /* This path goes UP two levels (from /logged_in/ to /main/ to /) */
             background-image: url('../../uploads/home/prototype.jpg');
-            opacity: 1; /* Visible by default */
+            opacity: 1;
         }
 
-        /* 2. Dark Mode Image */
         #bg-dark {
-            /* --- IMPORTANT: SET YOUR IMAGE PATH --- */
             background-image: url('../../uploads/home/darksouls.jpg');
-            opacity: 0; /* Hidden by default */
+            opacity: 0;
         }
 
-        /* 3. The Swap Logic */
         html.dark-mode body #bg-light {
-            opacity: 0; /* Hide light image in dark mode */
+            opacity: 0;
         }
+
         html.dark-mode body #bg-dark {
-            opacity: 1; /* Show dark image in dark mode */
+            opacity: 1;
         }
         
-        /* === NEW: Dark Mode Glass Override === */
         html.dark-mode body .header,
         html.dark-mode body .side-menu {
-            background-color: var(--glass-bg-dark); /* Dark glass */
+            background-color: var(--glass-bg-dark);
         }
-        /* === END NEW === */
 
-        /* --- 3. Base & Menu Styles --- */
         body {
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
             margin: 0;
             padding: 0;
-            /* background-color: var(--bg-color); */ /* === REMOVED === */
             color: var(--main-text-color);
             min-height: 100vh;
             transition: background-color 0.3s, color 0.3s;
         }
+
         .header {
-            /* background-color: var(--card-bg-color); */ /* OLD */
-            background-color: var(--glass-bg-light); /* NEW */
-            backdrop-filter: blur(10px); /* NEW */
+            background-color: var(--glass-bg-light);
+            backdrop-filter: blur(10px);
             padding: 15px 30px;
             display: flex;
             justify-content: space-between;
@@ -191,33 +171,98 @@ $fallback_cover = 'uploads/placeholder.png'; // Fallback for games without cover
             position: sticky;
             top: 0;
             z-index: 1001;
-            transition: background-color 0.3s; /* Add transition for glass */
+            transition: background-color 0.3s;
         }
-        .logo { font-size: 24px; font-weight: 700; color: var(--accent-color); text-decoration: none; }
-        .menu-toggle { background: none; border: none; cursor: pointer; font-size: 24px; color: var(--main-text-color); padding: 5px; }
+
+        .logo { 
+            font-size: 24px; 
+            font-weight: 700; 
+            color: var(--accent-color); 
+            text-decoration: none; 
+        }
+
+        .menu-toggle { 
+            background: none; 
+            border: none; 
+            cursor: pointer; 
+            font-size: 24px; 
+            color: var(--main-text-color); 
+            padding: 5px; 
+        }
+
         .side-menu {
-            position: fixed; top: 60px; right: 0; width: 220px;
-            background-color: var(--card-bg-color);
+            position: fixed; 
+            top: 60px; 
+            right: 0; 
+            width: 220px;
+            background-color: var(--glass-bg-light);
+            backdrop-filter: blur(10px);
             box-shadow: -4px 4px 8px var(--shadow-color);
             border-radius: 8px 0 8px 8px;
-            padding: 10px 0; z-index: 1000;
+            padding: 10px 0; 
+            z-index: 1000;
             transform: translateX(100%);
-            transition: transform 0.3s ease-in-out;
+            transition: transform 0.3s ease-in-out, background-color 0.3s;
         }
-        .side-menu.open { transform: translateX(0); }
-        .side-menu a, .menu-item { display: block; padding: 12px 20px; color: var(--main-text-color); text-decoration: none; transition: background-color 0.2s; cursor: pointer; }
-        .side-menu a:hover, .menu-item:hover { background-color: var(--bg-color); color: var(--accent-color); }
-        .side-menu a.active { background-color: var(--accent-color); color: white; font-weight: bold; }
+
+        .side-menu.open { 
+            transform: translateX(0); 
+        }
+
+        .side-menu a, 
+        .menu-item { 
+            display: block; 
+            padding: 12px 20px; 
+            color: var(--main-text-color); 
+            text-decoration: none; 
+            transition: background-color 0.2s; 
+            cursor: pointer; 
+        }
+
+        .side-menu a:hover, 
+        .menu-item:hover { 
+            background-color: var(--bg-color); 
+            color: var(--accent-color); 
+        }
+
+        .side-menu a.active { 
+            background-color: var(--accent-color); 
+            color: white; 
+            font-weight: bold; 
+        }
+
         .side-menu a.active:hover { 
             background-color: var(--accent-color);
             filter: brightness(0.85);
         }
-        .menu-divider { border-top: 1px solid var(--secondary-text-color); margin: 5px 0; }
-        .logout-link { color: #e74c3c !important; font-weight: bold; }
-        .icon { margin-right: 10px; width: 20px; text-align: center; }
-        .dark-mode-label { display: flex; justify-content: space-between; align-items: center; user-select: none; }
+
+        .menu-divider { 
+            border-top: 1px solid var(--secondary-text-color); 
+            margin: 5px 0; 
+        }
+
+        .logout-link { 
+            color: #e74c3c !important; 
+            font-weight: bold; 
+        }
         
-        /* --- 4. Profile Page Layout --- */
+        .logout-link:hover { 
+            background-color: #4e2925; 
+        }
+
+        .icon { 
+            margin-right: 10px; 
+            width: 20px; 
+            text-align: center; 
+        }
+
+        .dark-mode-label { 
+            display: flex; 
+            justify-content: space-between; 
+            align-items: center; 
+            user-select: none; 
+        }
+        
         .profile-container {
             display: grid;
             grid-template-columns: 300px 1fr;
@@ -227,7 +272,8 @@ $fallback_cover = 'uploads/placeholder.png'; // Fallback for games without cover
             padding: 0 30px;
         }
 
-        .account-panel, .games-panel {
+        .account-panel, 
+        .games-panel {
             background-color: var(--card-bg-color);
             border-radius: 8px;
             box-shadow: 0 4px 12px var(--shadow-color);
@@ -240,14 +286,17 @@ $fallback_cover = 'uploads/placeholder.png'; // Fallback for games without cover
             border-bottom: 2px solid var(--accent-color);
             padding-bottom: 10px;
         }
+
         .user-details p {
             font-size: 1.1em;
             color: var(--secondary-text-color);
             word-wrap: break-word;
         }
+
         .user-details p strong {
             color: var(--main-text-color);
         }
+
         .account-btn {
             display: block;
             width: 100%;
@@ -262,6 +311,7 @@ $fallback_cover = 'uploads/placeholder.png'; // Fallback for games without cover
             margin-top: 15px;
             transition: all 0.2s;
         }
+
         .account-btn:hover {
             border-color: var(--accent-color);
             background-color: var(--card-bg-color);
@@ -281,12 +331,14 @@ $fallback_cover = 'uploads/placeholder.png'; // Fallback for games without cover
             border-radius: 6px;
             margin-bottom: 20px;
         }
+
         .sort-controls label {
             display: flex;
             align-items: center;
             cursor: pointer;
             font-weight: 500;
         }
+
         .sort-controls input[type="radio"] {
             margin-right: 5px;
             accent-color: var(--accent-color);
@@ -297,6 +349,7 @@ $fallback_cover = 'uploads/placeholder.png'; // Fallback for games without cover
             grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
             gap: 20px;
         }
+
         .game-card {
             background-color: var(--bg-color);
             border-radius: 8px;
@@ -305,13 +358,14 @@ $fallback_cover = 'uploads/placeholder.png'; // Fallback for games without cover
             color: var(--main-text-color);
             box-shadow: 0 2px 5px var(--shadow-color);
             transition: transform 0.2s, box-shadow 0.2s;
-            /* --- NEW: Add cursor pointer --- */
             cursor: pointer;
         }
+
         .game-card:hover {
             transform: translateY(-3px);
             box-shadow: 0 6px 12px var(--shadow-color);
         }
+
         .game-card img {
             width: 100%;
             height: auto;
@@ -320,9 +374,11 @@ $fallback_cover = 'uploads/placeholder.png'; // Fallback for games without cover
             display: block;
             border-bottom: 3px solid var(--accent-color);
         }
+
         .game-card-info {
             padding: 15px;
         }
+
         .game-card-title {
             font-weight: bold;
             font-size: 1.1em;
@@ -331,39 +387,57 @@ $fallback_cover = 'uploads/placeholder.png'; // Fallback for games without cover
             text-overflow: ellipsis;
             margin: 0 0 10px 0;
         }
+
         .game-card-stats {
             display: flex;
             justify-content: space-between;
             font-size: 0.9em;
             color: var(--secondary-text-color);
         }
+
         .game-card-stats .stat-rating {
             color: #f39c12;
             font-weight: bold;
         }
+
         .game-card-stats .stat-fav {
             color: #e74c3c;
         }
+
         .game-card-stats .icon {
             margin-right: 5px;
         }
         
-        /* --- 5. Modal Styles --- */
         .modal-overlay {
-            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-            background: rgba(0, 0, 0, 0.7); z-index: 2000; display: none;
-            align-items: center; justify-content: center; overflow-y: auto;
+            position: fixed; 
+            top: 0; 
+            left: 0; 
+            width: 100%; 
+            height: 100%;
+            background: rgba(0, 0, 0, 0.7); 
+            z-index: 2000; 
+            display: none;
+            align-items: center; 
+            justify-content: center; 
+            overflow-y: auto;
         }
+
         .modal-container {
-            background-color: var(--card-bg-color); padding: 30px; border-radius: 8px;
-            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3); position: relative;
-            width: 100%; max-width: 500px; color: var(--main-text-color); margin: 20px;
+            background-color: var(--card-bg-color); 
+            padding: 30px; 
+            border-radius: 8px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3); 
+            position: relative;
+            width: 100%; 
+            max-width: 500px; 
+            color: var(--main-text-color); 
+            margin: 20px;
         }
+
         .modal-close {
             position: absolute;
             top: 10px;
-            left: 15px; /* <-- This was changed from 'right' */
-            right: auto; /* <-- This is added to be safe */
+            right: 15px;
             font-size: 28px;
             font-weight: bold;
             color: var(--secondary-text-color);
@@ -371,80 +445,183 @@ $fallback_cover = 'uploads/placeholder.png'; // Fallback for games without cover
             border: none;
             cursor: pointer;
         }
+
         .modal-container h2 {
-            color: var(--welcome-title-color); text-align: center; margin-top: 0;
-            margin-bottom: 25px; border-bottom: 2px solid var(--accent-color); padding-bottom: 10px;
+            color: var(--welcome-title-color); 
+            text-align: center; 
+            margin-top: 0;
+            margin-bottom: 25px; 
+            border-bottom: 2px solid var(--accent-color); 
+            padding-bottom: 10px;
         }
-        .modal-container .form-group { margin-bottom: 20px; }
+
+        .modal-container .form-group { 
+            margin-bottom: 20px; 
+        }
+
         .modal-container label {
-            display: block; margin-bottom: 8px; font-weight: bold;
+            display: block; 
+            margin-bottom: 8px; 
+            font-weight: bold;
             color: var(--label-text-color);
         }
+
         .modal-container input[type="text"],
         .modal-container input[type="password"] {
-            width: 100%; padding: 10px; border: 1px solid var(--border-color);
-            border-radius: 4px; box-sizing: border-box; font-size: 16px;
-            background-color: var(--bg-color); color: var(--main-text-color);
+            width: 100%; 
+            padding: 10px; 
+            border: 1px solid var(--border-color);
+            border-radius: 4px; 
+            box-sizing: border-box; 
+            font-size: 16px;
+            background-color: var(--bg-color); 
+            color: var(--main-text-color);
         }
+
         .modal-container .btn {
-            width: 100%; padding: 12px; background-color: var(--accent-color); 
-            color: white; border: none; border-radius: 4px; font-size: 18px;
-            cursor: pointer; transition: background-color 0.3s; margin-top: 10px;
+            width: 100%; 
+            padding: 12px; 
+            background-color: var(--accent-color); 
+            color: white; 
+            border: none; 
+            border-radius: 4px; 
+            font-size: 18px;
+            cursor: pointer; 
+            transition: background-color 0.3s; 
+            margin-top: 10px;
         }
-        .modal-container .btn:hover { background-color: #2980b9; }
+
+        .modal-container .btn:hover { 
+            background-color: var(--accent-color-darker); 
+        }
+
         .modal-container .message { 
-            padding: 10px; border-radius: 4px; margin-bottom: 15px; 
-            text-align: center; font-weight: bold;
+            padding: 10px; 
+            border-radius: 4px; 
+            margin-bottom: 15px; 
+            text-align: center; 
+            font-weight: bold;
         }
+
         .modal-container .error { 
-            background-color: var(--error-bg); color: var(--error-text); 
+            background-color: var(--error-bg); 
+            color: var(--error-text); 
             border: 1px solid var(--error-border); 
         }
+
         .modal-container .success { 
-            background-color: var(--success-bg); color: var(--success-text); 
+            background-color: var(--success-bg); 
+            color: var(--success-text); 
             border: 1px solid var(--success-border); 
         }
 
-        /* --- 6. NEW: Game Detail Modal Styles (from hub_game_detail_logged_in.php) --- */
+        #gameDetailModal .modal-container {
+            max-width: 1000px;
+        }
+
         .modal-container .game-detail-layout {
             display: grid;
-            grid-template-columns: 1fr 1fr; /* 50/50 split */
+            grid-template-columns: 1fr 1fr;
             gap: 40px;
             align-items: flex-start;
         }
+
         .modal-container .image-slideshow {
             position: relative;
             width: 100%;
             height: 0;
-            padding-bottom: 56.25%; /* 16:9 Aspect Ratio */
+            padding-bottom: 56.25%;
             overflow: hidden;
             border-radius: 8px;
             background-color: var(--bg-color);
             border: 1px solid var(--border-color);
-            margin-top: 30px; /* <-- ADD THIS LINE */
+            margin-top: 10px;
         }
-        .modal-container .slide { position: absolute; top: 0; left: 0; width: 100%; height: 100%; opacity: 0; transition: opacity 1s ease-in-out; }
-        .modal-container .slide.active { opacity: 1; }
-        .modal-container .slide img { width: 100%; height: 100%; object-fit: cover; }
-        .modal-container .slider-control { position: absolute; top: 50%; transform: translateY(-50%); background: rgba(0, 0, 0, 0.4); color: white; border: none; padding: 10px; cursor: pointer; z-index: 10; font-size: 1.5em; }
-        .modal-container .slider-control:hover { background: rgba(0, 0, 0, 0.6); }
-        .modal-container .prev { left: 0; border-radius: 0 5px 5px 0; }
-        .modal-container .next { right: 0; border-radius: 5px 0 0 5px; }
-        .modal-container .slide-indicators { position: absolute; bottom: 10px; left: 50%; transform: translateX(-50%); z-index: 10; display: flex; gap: 5px; }
-        .modal-container .dot { display: inline-block; width: 10px; height: 10px; background: rgba(255, 255, 255, 0.5); border-radius: 50%; cursor: pointer; transition: background 0.3s; }
-        .modal-container .dot.active { background: white; }
+
+        .modal-container .slide { 
+            position: absolute; 
+            top: 0; 
+            left: 0; 
+            width: 100%; 
+            height: 100%; 
+            opacity: 0; 
+            transition: opacity 1s ease-in-out; 
+        }
+
+        .modal-container .slide.active { 
+            opacity: 1; 
+        }
+
+        .modal-container .slide img { 
+            width: 100%; 
+            height: 100%; 
+            object-fit: cover; 
+        }
+
+        .modal-container .slider-control { 
+            position: absolute; 
+            top: 50%; 
+            transform: translateY(-50%); 
+            background: rgba(0, 0, 0, 0.4); 
+            color: white; 
+            border: none; 
+            padding: 10px; 
+            cursor: pointer; 
+            z-index: 10; 
+            font-size: 1.5em; 
+        }
+
+        .modal-container .slider-control:hover { 
+            background: rgba(0, 0, 0, 0.6); 
+        }
+
+        .modal-container .prev { 
+            left: 0; 
+            border-radius: 0 5px 5px 0; 
+        }
+
+        .modal-container .next { 
+            right: 0; 
+            border-radius: 5px 0 0 5px; 
+        }
+
+        .modal-container .slide-indicators { 
+            position: absolute; 
+            bottom: 10px; 
+            left: 50%; 
+            transform: translateX(-50%); 
+            z-index: 10; 
+            display: flex; 
+            gap: 5px; 
+        }
+
+        .modal-container .dot { 
+            display: inline-block; 
+            width: 10px; 
+            height: 10px; 
+            background: rgba(255, 255, 255, 0.5); 
+            border-radius: 50%; 
+            cursor: pointer; 
+            transition: background 0.3s; 
+        }
+
+        .modal-container .dot.active { 
+            background: white; 
+        }
 
         .modal-container .game-info {
             display: flex;
             flex-direction: column;
             gap: 15px;
         }
+
         .modal-container .game-title-header {
             display: flex;
             justify-content: space-between;
             align-items: flex-start;
             gap: 15px;
         }
+
         .modal-container .game-title {
             font-size: 2.5em;
             font-weight: 600;
@@ -452,12 +629,13 @@ $fallback_cover = 'uploads/placeholder.png'; // Fallback for games without cover
             margin: 0;
             line-height: 1.1;
         }
+
         .modal-container .game-desc {
             font-size: 1.1em;
             color: var(--secondary-text-color);
             line-height: 1.6;
-            max-height: 150px; /* Limit desc height */
-            overflow-y: auto; /* Add scroll if desc is long */
+            max-height: 150px;
+            overflow-y: auto;
         }
 
         .modal-container .favorite-icon {
@@ -466,6 +644,7 @@ $fallback_cover = 'uploads/placeholder.png'; // Fallback for games without cover
             cursor: pointer;
             transition: color 0.2s, transform 0.2s;
         }
+
         .modal-container .favorite-icon.active {
             color: var(--heart-color);
             transform: scale(1.1);
@@ -475,15 +654,18 @@ $fallback_cover = 'uploads/placeholder.png'; // Fallback for games without cover
             font-size: 2em;
             color: var(--star-color);
         }
+
         .modal-container .star-rating .star {
             cursor: pointer;
             transition: transform 0.1s;
         }
+
         .modal-container .star-rating .star:hover {
             transform: scale(1.2);
         }
 
-        .modal-container .trailer-link, .modal-container .next-link {
+        .modal-container .trailer-link, 
+        .modal-container .next-link {
             display: inline-block;
             padding: 12px 20px;
             font-size: 1.1em;
@@ -493,21 +675,25 @@ $fallback_cover = 'uploads/placeholder.png'; // Fallback for games without cover
             border-radius: 6px;
             transition: all 0.2s;
         }
+
         .modal-container .trailer-link {
             background-color: var(--card-bg-color);
             color: var(--accent-color);
             border: 2px solid var(--accent-color);
         }
+
         .modal-container .trailer-link:hover {
             background-color: var(--accent-color);
             color: white;
         }
+
         .modal-container .next-link {
-            background-color: #8e44ad; /* Next button color */
+            background-color: #8e44ad;
             color: white;
             border: 2px solid #8e44ad;
             margin-top: 10px;
         }
+
         .modal-container .next-link:hover {
             background-color: #9b59b6;
         }
@@ -556,7 +742,7 @@ $fallback_cover = 'uploads/placeholder.png'; // Fallback for games without cover
 <div class="profile-container">
 
     <aside class="account-panel">
-        <h2>YOUR ACCOUNT</h2>
+        <h2>ACCOUNT</h2>
         <div class="user-details">
             <p><strong>Username:</strong> <span id="currentUsername"><?php echo $username; ?></span></p>
             <p><strong>Email:</strong> <?php echo $email; ?></p>
@@ -627,20 +813,20 @@ $fallback_cover = 'uploads/placeholder.png'; // Fallback for games without cover
 </div>
 
 <?php
-    // --- 6. Include Modals ---
+    
     include 'modal_change_username.php';
     include 'modal_change_password.php';
-    // --- NEW: Include game detail modal template ---
+    
     include 'hub_main_profile_game_details.php';
 ?>
 
 <script>
-    // --- 1. Side Menu Toggle Logic ---
+    
     document.getElementById('menuToggle').addEventListener('click', function() {
         document.getElementById('sideMenu').classList.toggle('open');
     });
 
-    // --- 2. Updated Dark Mode Logic (Fixes Flicker) ---
+    
     const darkModeText = document.getElementById('darkModeText');
     const localStorageKey = 'gamehubDarkMode';
     const htmlElement = document.documentElement; 
@@ -666,7 +852,7 @@ $fallback_cover = 'uploads/placeholder.png'; // Fallback for games without cover
         applyDarkMode(isDark);
     })();
 
-    // --- 3. Modal Control Logic ---
+    
     function openModal(modalId) {
         const modal = document.getElementById(modalId);
         if (modal) modal.style.display = 'flex';
@@ -676,43 +862,41 @@ $fallback_cover = 'uploads/placeholder.png'; // Fallback for games without cover
         const modal = document.getElementById(modalId);
         if (modal) modal.style.display = 'none';
         
-        // Clear success/error messages when closing
+        
         const successMsg = modal.querySelector('.success');
         const errorMsg = modal.querySelector('.error');
         if (successMsg) successMsg.style.display = 'none';
         if (errorMsg) errorMsg.style.display = 'none';
     }
     
-    // Auto-open modal if PHP has set an error/success
+    
     <?php if (!empty($username_error) || !empty($username_success)): ?>
         openModal('changeUsernameModal');
     <?php elseif (!empty($password_error) || !empty($password_success)): ?>
         openModal('changePasswordModal');
     <?php endif; ?>
 
-    // --- 4. Sorting and Filtering Logic ---
+    
     document.addEventListener('DOMContentLoaded', function() {
         const controls = document.getElementById('sortControls');
         const grid = document.getElementById('gameGrid');
-        // Convert NodeList to Array to make it sortable
+        
         const allGames = Array.from(grid.getElementsByClassName('game-card'));
 
         function applySortAndFilter() {
             const sortType = controls.querySelector('input[name="sort"]:checked').value;
             const showFavourites = controls.querySelector('#showFavourites').checked;
 
-            // 1. Filter
+            
             let filteredGames = allGames.filter(game => {
                 if (showFavourites) {
                     return game.dataset.favourite == '1';
                 }
-                // --- MODIFIED: Only show games with interaction ---
-                // This is now handled by the PHP query, but we keep this
-                // for the 'Show Favourites Only' filter.
+                
                 return true; 
             });
 
-            // 2. Sort
+            
             if (sortType === 'alpha') {
                 filteredGames.sort((a, b) => a.dataset.name.localeCompare(b.dataset.name));
             } else if (sortType === 'rating') {
@@ -720,14 +904,14 @@ $fallback_cover = 'uploads/placeholder.png'; // Fallback for games without cover
             } else if (sortType === 'category') {
                 filteredGames.sort((a, b) => {
                     if (a.dataset.category === b.dataset.category) {
-                        // If categories are same, sort by name
+                        
                         return a.dataset.name.localeCompare(b.dataset.name);
                     }
                     return a.dataset.category.localeCompare(b.dataset.category);
                 });
             }
 
-            // 3. Re-append to grid
+            
             grid.innerHTML = '';
             filteredGames.forEach(game => grid.appendChild(game));
             
@@ -738,18 +922,18 @@ $fallback_cover = 'uploads/placeholder.png'; // Fallback for games without cover
             }
         }
 
-        // Add event listeners to all controls
+        
         controls.addEventListener('change', applySortAndFilter);
         
-        // --- MODIFIED: Update empty message based on PHP ---
+        
         if (allGames.length === 0) {
              grid.innerHTML = '<p>You have not rated, favourited, or surveyed any games yet. Go to the Library to get started!</p>';
         }
     });
 
-    // --- 5. NEW: Game Detail Modal JavaScript ---
     
-    // --- Global slideshow variables for the modal ---
+    
+    
     let modalCurrentSlide = 0;
     let modalSlides = [];
     let modalDots = [];
@@ -757,7 +941,7 @@ $fallback_cover = 'uploads/placeholder.png'; // Fallback for games without cover
     let modalSlideTimer = null;
     const modalFallbackImg = '../../uploads/placeholder.png';
     
-    // --- Slideshow logic (adapted for modal) ---
+    
     function initializeModalSlideshow(gallery) {
         modalSlides = document.querySelectorAll('#modalSlideshowContent .slide');
         modalDots = document.querySelectorAll('#modalSlideIndicators .dot');
@@ -773,7 +957,7 @@ $fallback_cover = 'uploads/placeholder.png'; // Fallback for games without cover
             stopModalAutoSlide();
         }
         
-        // Add dot click listeners
+        
         modalDots.forEach((dot, index) => {
             dot.addEventListener('click', () => {
                 stopModalAutoSlide();
@@ -785,7 +969,7 @@ $fallback_cover = 'uploads/placeholder.png'; // Fallback for games without cover
 
     function showModalSlide(n) {
         if (modalTotalSlides === 0) return;
-        modalCurrentSlide = (n + modalTotalSlides) % modalTotalSlides; // Wraps around
+        modalCurrentSlide = (n + modalTotalSlides) % modalTotalSlides; 
         modalSlides.forEach(slide => slide.classList.remove('active'));
         modalDots.forEach(dot => dot.classList.remove('active'));
         if (modalSlides[modalCurrentSlide]) modalSlides[modalCurrentSlide].classList.add('active');
@@ -809,7 +993,7 @@ $fallback_cover = 'uploads/placeholder.png'; // Fallback for games without cover
         modalSlideTimer = null;
     }
 
-    // --- Feedback logic (adapted for modal) ---
+    
     async function sendModalFeedback(gameId, feedbackData) {
         try {
             const response = await fetch('../../hub_update_feedback.php', {
@@ -830,7 +1014,7 @@ $fallback_cover = 'uploads/placeholder.png'; // Fallback for games without cover
         favoriteIcon.setAttribute('data-game-id', gameId);
         starRatingContainer.setAttribute('data-game-id', gameId);
 
-        // --- Favorite (Heart) Logic ---
+        
         favoriteIcon.onclick = function() {
             const isNowActive = !this.classList.contains('active');
             this.classList.toggle('active');
@@ -839,7 +1023,7 @@ $fallback_cover = 'uploads/placeholder.png'; // Fallback for games without cover
             sendModalFeedback(gameId, { favorite: isNowActive ? 1 : 0 });
         };
 
-        // --- Star Rating Logic ---
+        
         const stars = starRatingContainer.querySelectorAll('.star');
         
         function updateModalStars(rating) {
@@ -859,22 +1043,22 @@ $fallback_cover = 'uploads/placeholder.png'; // Fallback for games without cover
         });
     }
     
-    // --- Main Modal Population Functions ---
+    
     function populateGameModal(data) {
         const game = data.details;
         const gallery = data.gallery;
         const feedback = data.feedback;
 
-        // 1. Populate Text and Links
+        
         document.getElementById('modalGameTitle').textContent = game.game_name;
-        document.getElementById('modalGameDesc').innerHTML = game.game_desc.replace(/\n/g, '<br>'); // nl2br
+        document.getElementById('modalGameDesc').innerHTML = game.game_desc.replace(/\n/g, '<br>'); 
         document.getElementById('modalTrailerLink').href = game.game_trailerLink;
         document.getElementById('modalGameLink').href = game.game_Link;
         document.getElementById('modalSurveyLink').href = `../survey/hub_survey_game.php?game_id=${game.game_id}`;
 
-        // 2. Populate Feedback Icons
+        
         const favoriteIcon = document.getElementById('modalFavoriteIcon');
-        favoriteIcon.className = 'favorite-icon fa-heart'; // Reset classes
+        favoriteIcon.className = 'favorite-icon fa-heart'; 
         if (feedback.favorite_game == 1) {
             favoriteIcon.classList.add('fas', 'active');
         } else {
@@ -889,7 +1073,7 @@ $fallback_cover = 'uploads/placeholder.png'; // Fallback for games without cover
         }
         starContainer.innerHTML = starHTML;
 
-        // 3. Populate Slideshow
+        
         const slideContainer = document.getElementById('modalSlideshowContent');
         const indicatorContainer = document.getElementById('modalSlideIndicators');
         let slideHTML = '';
@@ -910,7 +1094,7 @@ $fallback_cover = 'uploads/placeholder.png'; // Fallback for games without cover
         slideContainer.innerHTML = slideHTML;
         indicatorContainer.innerHTML = indicatorHTML;
         
-        // 4. (Re)Initialize interactive elements
+        
         initializeModalSlideshow();
         initializeModalFeedback(game.game_id);
     }
@@ -959,7 +1143,7 @@ $fallback_cover = 'uploads/placeholder.png'; // Fallback for games without cover
         }
     }
     
-    // Custom close function for the game modal to stop the slideshow
+    
     function closeGameModal() {
         closeModal('gameDetailModal');
         stopModalAutoSlide();
