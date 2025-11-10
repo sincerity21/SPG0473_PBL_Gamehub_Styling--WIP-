@@ -2,7 +2,6 @@
 session_start();
 require '../hub_conn.php'; 
 
-
 $login_error = '';
 $register_error = '';
 $forgot_step1_error = '';
@@ -240,27 +239,27 @@ if (empty($gallery_images)) {
             --glass-bg-light: rgba(255, 255, 255, 0.7);
             --glass-bg-dark: rgba(30, 30, 30, 0.7);
         }
-
+        
         html.dark-mode body {
-            --bg-color: #121212;
-            --main-text-color: #f4f4f4;
+            --bg-color: #121212; 
+            --main-text-color: #f4f4f4; 
             --accent-color: #f39c12;
             --accent-color-darker: #c87f0a;
-            --secondary-text-color: #95a5a6;
-            --card-bg-color: #1e1e1e;
+            --secondary-text-color: #95a5a6; 
+            --card-bg-color: #1e1e1e; 
             --shadow-color: rgba(0, 0, 0, 0.4);
-            --border-color: #444;
+            --border-color: #444; 
             --welcome-title-color: #ecf0f1;
-            --login-color: #27ae60;
+            --login-color: #27ae60; 
         }
 
         .background-image {
             position: fixed;
-            top: -10px;
+            top: -10px; 
             left: -10px;
             width: calc(100% + 20px);
             height: calc(100% + 20px);
-            z-index: -1;
+            z-index: -1; 
             background-size: cover;
             background-position: center;
             filter: blur(5px);
@@ -270,142 +269,38 @@ if (empty($gallery_images)) {
 
         #bg-light {
             background-image: url('../uploads/home/prototype.jpg');
-            opacity: 1;
+            opacity: 1; 
         }
 
         #bg-dark {
             background-image: url('../uploads/home/darksouls.jpg');
-            opacity: 0;
+            opacity: 0; 
         }
 
         html.dark-mode body #bg-light {
-            opacity: 0;
+            opacity: 0; 
         }
 
         html.dark-mode body #bg-dark {
-            opacity: 1;
+            opacity: 1; 
         }
-
+        
         html.dark-mode body .header,
         html.dark-mode body .side-menu {
             background-color: var(--glass-bg-dark);
         }
 
-        body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            margin: 0;
-            padding: 0;
-            color: var(--main-text-color);
-            min-height: 100vh;
-            transition: background-color 0.3s, color 0.3s;
+        body { 
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; 
+            margin: 0; 
+            padding: 0; 
+            color: var(--main-text-color); 
+            min-height: 100vh; 
+            transition: background-color 0.3s, color 0.3s; 
         }
-
-        .header {
-            background-color: var(--glass-bg-light);
-            backdrop-filter: blur(10px);
-            padding: 15px 30px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            box-shadow: 0 2px 4px var(--shadow-color);
-            position: sticky;
-            top: 0;
-            z-index: 1001;
-            transition: background-color 0.3s;
-        }
-
-        .logo {
-            font-size: 24px;
-            font-weight: 700;
-            color: var(--accent-color);
-            text-decoration: none;
-        }
-
-        .menu-toggle {
-            background: none;
-            border: none;
-            cursor: pointer;
-            font-size: 24px;
-            color: var(--main-text-color);
-            padding: 5px;
-        }
-
-        .side-menu {
-            position: fixed;
-            top: 60px;
-            right: 0;
-            width: 220px;
-            background-color: var(--glass-bg-light);
-            backdrop-filter: blur(10px);
-            box-shadow: -4px 4px 8px var(--shadow-color);
-            border-radius: 8px 0 8px 8px;
-            padding: 10px 0;
-            z-index: 1000;
-            transform: translateX(100%);
-            transition: transform 0.3s ease-in-out, background-color 0.3s;
-        }
-
-        .side-menu.open {
-            transform: translateX(0);
-        }
-
-        .side-menu a,
-        .menu-item {
-            display: block;
-            padding: 12px 20px;
-            color: var(--main-text-color);
-            text-decoration: none;
-            transition: background-color 0.2s;
-            cursor: pointer;
-        }
-
-        .side-menu a:hover,
-        .menu-item:hover {
-            background-color: var(--bg-color);
-            color: var(--accent-color);
-        }
-
-        .side-menu a.active {
-            background-color: var(--accent-color);
-            color: white;
-            font-weight: bold;
-        }
-
-        .side-menu a.active:hover {
-            background-color: var(--accent-color);
-            filter: brightness(0.85);
-        }
-
-        .side-menu a.login-link {
-            color: var(--login-color) !important;
-            font-weight: bold;
-        }
-
-        .side-menu a.login-link:hover {
-            background-color: var(--bg-color);
-            color: #2ecc71 !important;
-        }
-
-        .menu-divider {
-            border-top: 1px solid var(--secondary-text-color);
-            margin: 5px 0;
-        }
-
-        .icon {
-            margin-right: 10px;
-            width: 20px;
-            text-align: center;
-        }
-
-        .dark-mode-label {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            user-select: none;
-        }
-
-        .dark-mode-label .icon {
-            font-size: 1.2em;
+        
+        .header, .side-menu {
+            display: none;
         }
 
         .modal-overlay {
@@ -414,37 +309,48 @@ if (empty($gallery_images)) {
             left: 0;
             width: 100%;
             height: 100%;
-            background: rgba(0, 0, 0, 0.7);
+            background: transparent;
             z-index: 2000;
-            display: none;
+            display: flex;
             align-items: center;
             justify-content: center;
             overflow-y: auto;
         }
 
         .modal-container {
-            background-color: var(--card-bg-color);
+            background-color: var(--glass-bg-light);
+            backdrop-filter: blur(10px);
             padding: 30px;
             border-radius: 8px;
-            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+            box-shadow: 0 5px 15px var(--shadow-color);
             position: relative;
             width: 100%;
-            max-width: 500px;
+            max-width: 1000px;
             color: var(--main-text-color);
             margin: 20px;
+        }
+        
+        html.dark-mode body .modal-container {
+             background-color: var(--glass-bg-dark);
         }
 
         .modal-close {
             position: absolute;
             top: 10px;
-            right: 15px;
+            left: 15px;
+            right: auto;
             font-size: 28px;
             font-weight: bold;
-            color: #aaa;
+            color: var(--main-text-color);
             background: none;
             border: none;
             cursor: pointer;
-            color: var(--secondary-text-color);
+            text-decoration: none;
+            line-height: 1;
+        }
+        
+        .modal-close:hover {
+            color: var(--accent-color);
         }
 
         .modal-container h2 {
@@ -615,27 +521,14 @@ if (empty($gallery_images)) {
             background-color: #27ae60;
         }
 
-        .content-container {
-            max-width: 1000px;
-            margin: 30px auto;
-            padding: 30px;
-            background-color: var(--glass-bg-light);
-            backdrop-filter: blur(10px);
-            border-radius: 8px;
-            box-shadow: 0 4px 12px var(--shadow-color);
-        }
-
-        html.dark-mode body .content-container {
-            background-color: var(--glass-bg-dark);
-        }
-
         .game-detail-layout {
             display: grid;
-            grid-template-columns: 1fr 1fr;
+            grid-template-columns: 1fr 1fr; 
             gap: 40px;
             align-items: flex-start;
+            margin-top: 30px;
         }
-
+        
         .image-slideshow {
             position: relative;
             width: 100%;
@@ -647,75 +540,75 @@ if (empty($gallery_images)) {
             border: 1px solid var(--border-color);
         }
 
-        .slide {
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            opacity: 0;
-            transition: opacity 1s ease-in-out;
+        .slide { 
+            position: absolute; 
+            top: 0; 
+            left: 0; 
+            width: 100%; 
+            height: 100%; 
+            opacity: 0; 
+            transition: opacity 1s ease-in-out; 
         }
 
-        .slide.active {
-            opacity: 1;
+        .slide.active { 
+            opacity: 1; 
         }
 
-        .slide img {
-            width: 100%;
-            height: 100%;
-            object-fit: cover;
+        .slide img { 
+            width: 100%; 
+            height: 100%; 
+            object-fit: cover; 
         }
 
-        .slider-control {
-            position: absolute;
-            top: 50%;
-            transform: translateY(-50%);
-            background: rgba(0, 0, 0, 0.4);
-            color: white;
-            border: none;
-            padding: 10px;
-            cursor: pointer;
-            z-index: 10;
-            font-size: 1.5em;
+        .slider-control { 
+            position: absolute; 
+            top: 50%; 
+            transform: translateY(-50%); 
+            background: rgba(0, 0, 0, 0.4); 
+            color: white; 
+            border: none; 
+            padding: 10px; 
+            cursor: pointer; 
+            z-index: 10; 
+            font-size: 1.5em; 
         }
 
-        .slider-control:hover {
-            background: rgba(0, 0, 0, 0.6);
+        .slider-control:hover { 
+            background: rgba(0, 0, 0, 0.6); 
         }
 
-        .prev {
-            left: 0;
-            border-radius: 0 5px 5px 0;
+        .prev { 
+            left: 0; 
+            border-radius: 0 5px 5px 0; 
         }
 
-        .next {
-            right: 0;
-            border-radius: 5px 0 0 5px;
+        .next { 
+            right: 0; 
+            border-radius: 5px 0 0 5px; 
         }
 
-        .slide-indicators {
-            position: absolute;
-            bottom: 10px;
-            left: 50%;
-            transform: translateX(-50%);
-            z-index: 10;
-            display: flex;
-            gap: 5px;
+        .slide-indicators { 
+            position: absolute; 
+            bottom: 10px; 
+            left: 50%; 
+            transform: translateX(-50%); 
+            z-index: 10; 
+            display: flex; 
+            gap: 5px; 
         }
 
-        .dot {
-            display: inline-block;
-            width: 10px;
-            height: 10px;
-            background: rgba(255, 255, 255, 0.5);
-            border-radius: 50%;
-            cursor: pointer;
-            transition: background 0.3s;
+        .dot { 
+            display: inline-block; 
+            width: 10px; 
+            height: 10px; 
+            background: rgba(255, 255, 255, 0.5); 
+            border-radius: 50%; 
+            cursor: pointer; 
+            transition: background 0.3s; 
         }
 
-        .dot.active {
-            background: white;
+        .dot.active { 
+            background: white; 
         }
 
         .game-info {
@@ -752,7 +645,7 @@ if (empty($gallery_images)) {
             transition: color 0.2s, transform 0.2s;
         }
 
-        .favorite-icon.active {
+        .favorite-icon.active { 
             color: var(--heart-color);
         }
 
@@ -770,7 +663,7 @@ if (empty($gallery_images)) {
             transform: scale(1.2);
         }
 
-        .trailer-link,
+        .trailer-link, 
         .next-link {
             display: inline-block;
             padding: 12px 20px;
@@ -794,7 +687,7 @@ if (empty($gallery_images)) {
         }
 
         .next-link {
-            background-color: #8e44ad;
+            background-color: #8e44ad; 
             color: white;
             border: 2px solid #8e44ad;
             margin-top: 20px;
@@ -803,7 +696,7 @@ if (empty($gallery_images)) {
         .next-link:hover {
             background-color: #9b59b6;
         }
-
+        
         .back-link {
             display: inline-block;
             margin-bottom: 20px;
@@ -812,8 +705,8 @@ if (empty($gallery_images)) {
             font-weight: 600;
         }
 
-        .back-link:hover {
-            text-decoration: underline;
+        .back-link:hover { 
+            text-decoration: underline; 
         }
     </style>
     
@@ -831,104 +724,75 @@ if (empty($gallery_images)) {
 <div class="background-image" id="bg-light"></div>
 <div class="background-image" id="bg-dark"></div>
 
-<div class="header">
-    <div class="logo">GAMEHUB</div>
-    <button class="menu-toggle" id="menuToggle">
-        <i class="fas fa-bars"></i>
-    </button>
-</div>
-
-<div class="side-menu" id="sideMenu">
-    <a href="hub_home.php"><span class="icon"><i class="fas fa-home"></i></span>Home</a>
-    <a href="hub_home_category.php" class="active"><span class="icon"><i class="fas fa-book-open"></i></span>Library</a> 
-    <a href="hub_main_about.php"><span class="icon"><i class="fas fa-info-circle"></i></span>About</a>
-    
-    <div class="menu-divider"></div>
-
-    <a href="#" class="login-link" onclick="openModal('loginModal')"><span class="icon"><i class="fas fa-sign-in-alt"></i></span>Login</a>
-    
-    <div class="menu-divider"></div>
-    <div class="menu-item dark-mode-label" onclick="toggleDarkMode()">
-        <span class="icon"><i class="fas fa-moon"></i></span>
-        <span id="darkModeText">Switch Dark Mode</span>
-    </div>
-</div>
-
-<div class="content-container">
-    
-    <a href="hub_home_category.php" class="back-link">
-        <i class="fas fa-chevron-left"></i> Back to Library
-    </a>
-
-    <div class="game-detail-layout">
+<div class="modal-overlay" style="display: flex;">
+    <div class="modal-container" style="max-width: 1000px;">
         
-        <div class="image-slideshow">
-            <div id="slideshow-content">
-                <?php foreach ($gallery_images as $index => $image): ?>
-                    <div class="slide <?php echo $index === 0 ? 'active' : ''; ?>">
-                        <img src="../<?php echo htmlspecialchars($image['img_path']); ?>" alt="Game Screenshot">
-                    </div>
-                <?php endforeach; ?>
-            </div>
+        <a href="hub_home_category.php" class="modal-close" style="right: auto; left: 15px; text-decoration: none;">&times;</a>
+
+        <div class="game-detail-layout">
             
-            <?php if (count($gallery_images) > 1): ?>
-                <button type="button" class="slider-control prev" onclick="changeSlide(-1)">
-                    <i class="fas fa-chevron-left"></i>
-                </button>
-                <button type="button" class="slider-control next" onclick="changeSlide(1)">
-                    <i class="fas fa-chevron-right"></i>
-                </button>
-                <div class="slide-indicators" id="slide-indicators">
-                    <?php for ($i = 0; $i < count($gallery_images); $i++): ?>
-                        <span class="dot <?php echo $i === 0 ? 'active' : ''; ?>" data-index="<?php echo $i; ?>"></span>
+            <div class="image-slideshow">
+                <div id="slideshow-content">
+                    <?php foreach ($gallery_images as $index => $image): ?>
+                        <div class="slide <?php echo $index === 0 ? 'active' : ''; ?>">
+                            <img src="../<?php echo htmlspecialchars($image['img_path']); ?>" alt="Game Screenshot">
+                        </div>
+                    <?php endforeach; ?>
+                </div>
+                
+                <?php if (count($gallery_images) > 1): ?>
+                    <button type="button" class="slider-control prev" onclick="changeSlide(-1)">
+                        <i class="fas fa-chevron-left"></i>
+                    </button>
+                    <button type="button" class="slider-control next" onclick="changeSlide(1)">
+                        <i class="fas fa-chevron-right"></i>
+                    </button>
+                    <div class="slide-indicators" id="slide-indicators">
+                        <?php for ($i = 0; $i < count($gallery_images); $i++): ?>
+                            <span class="dot <?php echo $i === 0 ? 'active' : ''; ?>" data-index="<?php echo $i; ?>"></span>
+                        <?php endfor; ?>
+                    </div>
+                <?php endif; ?>
+            </div>
+
+            <div class="game-info">
+                <div class="game-title-header">
+                    <h2 class="game-title"><?php echo htmlspecialchars($game['game_name']); ?></h2>
+                    <i class="far fa-heart favorite-icon <?php echo $is_favorite ? 'active' : ''; ?>" 
+                       id="favoriteIcon"></i>
+                </div>
+                
+                <p class="game-desc"><?php echo nl2br(htmlspecialchars($game['game_desc'])); ?></p>
+                
+                <div class="star-rating" id="starRating">
+                    <?php for ($i = 1; $i <= 5; $i++): ?>
+                        <i class="star far fa-star" data-value="<?php echo $i; ?>"></i>
                     <?php endfor; ?>
                 </div>
-            <?php endif; ?>
-        </div>
 
-        <div class="game-info">
-            <div class="game-title-header">
-                <h2 class="game-title"><?php echo htmlspecialchars($game['game_name']); ?></h2>
-                <i class="far fa-heart favorite-icon <?php echo $is_favorite ? 'active' : ''; ?>" 
-                   id="favoriteIcon"></i>
+                <a href="<?php echo htmlspecialchars($game['game_trailerLink']); ?>" class="trailer-link" target="_blank">
+                    <i class="fab fa-youtube"></i> Watch the Trailer (on YouTube)
+                </a>
+
+                <a href="#" class="next-link" onclick="openModal('loginModal')">
+                    LOGIN TO CONTINUE
+                </a>
             </div>
-            
-            <p class="game-desc"><?php echo nl2br(htmlspecialchars($game['game_desc'])); ?></p>
-            
-            <div class="star-rating" id="starRating">
-                <?php for ($i = 1; $i <= 5; $i++): ?>
-                    <i class="star far fa-star" data-value="<?php echo $i; ?>"></i>
-                <?php endfor; ?>
-            </div>
-
-            <a href="<?php echo htmlspecialchars($game['game_trailerLink']); ?>" class="trailer-link" target="_blank">
-                <i class="fab fa-youtube"></i> Watch the Trailer (on YouTube)
-            </a>
-
-            <a href="#" class="next-link" onclick="openModal('loginModal')">
-                LOGIN TO CONTINUE
-            </a>
         </div>
     </div>
 </div>
 
 <?php
     
-    include '../modals/hub_login.php';
-    include '../modals/hub_register.php';
-    include '../modals/hub_forgotpassword.php'; 
-    include '../modals/hub_forgotpassword2.php'; 
-    include '../modals/hub_resetpassword.php'; 
+    include '../hub_login.php';
+    include '../hub_register.php';
+    include '../hub_forgotpassword.php'; 
+    include '../hub_forgotpassword2.php'; 
+    include '../hub_resetpassword.php'; 
 ?>
 
 <script>
     
-
-    
-    document.getElementById('menuToggle').addEventListener('click', function() {
-        document.getElementById('sideMenu').classList.toggle('open');
-    });
-
     
     const darkModeText = document.getElementById('darkModeText');
     const localStorageKey = 'gamehubDarkMode';
