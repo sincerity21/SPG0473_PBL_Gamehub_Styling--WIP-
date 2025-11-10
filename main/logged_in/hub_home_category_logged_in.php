@@ -827,8 +827,7 @@ $fallback_cover = 'uploads/placeholder.png';
         document.getElementById('modalGameTitle').textContent = game.game_name;
         document.getElementById('modalGameDesc').innerHTML = game.game_desc.replace(/\n/g, '<br>'); 
         document.getElementById('modalTrailerLink').href = game.game_trailerLink;
-        document.getElementById('modalGameLink').href = game.game_Link;
-        document.getElementById('modalSurveyLink').href = `../survey/hub_survey_game.php?game_id=${game.game_id}`;
+        document.getElementById('modalSurveyLink').href = `hub_survey.php?game_id=${game.game_id}`;
 
         
         const favoriteIcon = document.getElementById('modalFavoriteIcon');
@@ -878,7 +877,6 @@ $fallback_cover = 'uploads/placeholder.png';
         document.getElementById('modalGameTitle').textContent = 'Loading...';
         document.getElementById('modalGameDesc').textContent = 'Loading game description...';
         document.getElementById('modalTrailerLink').href = '#';
-        document.getElementById('modalGameLink').href = '#';
         document.getElementById('modalSurveyLink').href = '#';
         document.getElementById('modalFavoriteIcon').className = 'favorite-icon far fa-heart';
         document.getElementById('modalStarRating').innerHTML = `

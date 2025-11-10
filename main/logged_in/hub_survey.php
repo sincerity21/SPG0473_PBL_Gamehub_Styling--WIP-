@@ -492,7 +492,7 @@ $current_site_open_feedback = $existing_site_feedback['feedback_site_open'] ?? '
 
 <div class="content-container">
 
-    <a href="hub_game_detail_logged_in.php?game_id=<?php echo $game_id; ?>" class="back-link">
+    <a href="hub_home_category_logged_in.php" class="back-link">
         <i class="fas fa-chevron-left"></i> Back to Game Detail
     </a>
 
