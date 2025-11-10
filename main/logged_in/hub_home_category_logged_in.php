@@ -469,10 +469,14 @@ $fallback_cover = 'uploads/placeholder.png';
 
         .game-desc {
             font-size: 1.1em;
-            color: var(--secondary-text-color);
+            color: var(--main-text-color);
             line-height: 1.6;
             max-height: 150px;
             overflow-y: auto;
+        }
+
+        html.dark-mode body .game-desc { 
+            color: var(--secondary-text-color); 
         }
 
         .favorite-icon {
