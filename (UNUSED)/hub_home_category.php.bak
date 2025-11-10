@@ -1,0 +1,428 @@
+<?php
+session_start();
+require '../hub_conn.php'; // Assuming hub_conn is one level up
+
+// Ensure the user is logged in
+if (!isset($_SESSION['username'])) {
+    header('Location: ../hub_login.php');
+    exit();
+}
+
+$username = htmlspecialchars($_SESSION['username']);
+$categories = selectAllGameCategories();
+$random_images = selectRandomGalleryImages(9); // Fetch 9 random images for the slider
+
+// --- CATEGORY MAPPING LOGIC ---
+// Maps short database values to user-friendly titles.
+$category_map = [
+    'fps' => 'First-Person Shooter',
+    'rpg' => 'Role-Playing Game',
+    'moba' => 'Multiplayer Online Battle Arena',
+    'puzzle' => 'Puzzle',
+    'sport' => 'Sports',
+    'racing' => 'Racing',
+    'sim' => 'Simulation',
+    'survival' => 'Survival',
+    'fight' => 'Fighting',
+    // Add any other categories here as needed
+];
+// ------------------------------
+
+// Fallback image array if no gallery images are found
+if (empty($random_images)) {
+    // Note: User needs to create this placeholder image at /PBL/uploads/placeholder.png
+    $random_images[] = 'uploads/placeholder.png'; 
+}
+
+// Handle form submission (The user clicked 'NEXT')
+if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['selected_category'])) {
+    $category = strtolower(trim($_POST['selected_category']));
+    
+    // New: Redirect to the single view file with the category as a URL parameter
+    header("Location: hub_games_view.php?cat={$category}");
+    exit();
+}
+?>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GameHub - Choose Category</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <style>
+        /* --- Dark Mode Variables (Copied from hub_home_logged_in.php for consistency) --- */
+        :root {
+            --bg-color: #f4f7f6;
+            --main-text-color: #333;
+            --accent-color: #3498db;
+            --secondary-text-color: #7f8c8d;
+            --card-bg-color: white;
+            --shadow-color: rgba(0, 0, 0, 0.05);
+            --wave-opacity: 0.15;
+            --welcome-title-color: #2c3e50;
+        }
+
+        body.dark-mode {
+            --bg-color: #121212;
+            --main-text-color: #f4f4f4;
+            --accent-color: #4dc2f9;
+            --secondary-text-color: #95a5a6;
+            --card-bg-color: #1e1e1e;
+            --shadow-color: rgba(0, 0, 0, 0.4);
+            --wave-opacity: 0.05;
+            --welcome-title-color: #ecf0f1;
+        }
+        
+        /* General Styles */
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: var(--bg-color);
+            color: var(--main-text-color);
+            min-height: 100vh;
+            transition: background-color 0.3s, color 0.3s;
+        }
+        .header {
+            background-color: var(--card-bg-color);
+            padding: 15px 30px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 2px 4px var(--shadow-color);
+        }
+        .logo { font-size: 24px; font-weight: 700; color: var(--accent-color); }
+        .menu-toggle { background: none; border: none; cursor: pointer; font-size: 24px; color: var(--main-text-color); padding: 5px; }
+
+        /* Side Menu Styles */
+        .side-menu {
+            position: fixed; top: 60px; right: 0; width: 220px;
+            background-color: var(--card-bg-color);
+            box-shadow: -4px 4px 8px var(--shadow-color);
+            border-radius: 8px 0 8px 8px;
+            padding: 10px 0; z-index: 1000;
+            transform: translateX(100%);
+            transition: transform 0.3s ease-in-out;
+        }
+        .side-menu.open { transform: translateX(0); }
+        .side-menu a, .menu-item { display: block; padding: 12px 20px; color: var(--main-text-color); text-decoration: none; transition: background-color 0.2s; cursor: pointer; }
+        .side-menu a:hover, .menu-item:hover { background-color: var(--bg-color); color: var(--accent-color); }
+        .menu-divider { border-top: 1px solid var(--secondary-text-color); margin: 5px 0; }
+        .logout-link { color: #e74c3c !important; font-weight: bold; }
+        .icon { margin-right: 10px; width: 20px; text-align: center; }
+
+        /* Content Layout */
+        .content-container {
+            max-width: 1000px;
+            margin: 40px auto;
+            padding: 20px;
+            background-color: var(--card-bg-color);
+            border-radius: 10px;
+            box-shadow: 0 4px 15px var(--shadow-color);
+        }
+        .hello-title {
+            font-size: 2.2em;
+            font-weight: 500;
+            color: var(--welcome-title-color);
+            margin-bottom: 20px;
+        }
+        .wave-line {
+            height: 15px;
+            background: linear-gradient(to right, 
+                transparent 0%, var(--accent-color) 10%, 
+                var(--accent-color) 90%, transparent 100%);
+            border-radius: 50%/100px 100px 0 0;
+            margin: 20px 0;
+            opacity: 0.5;
+        }
+        h2 {
+            font-size: 1.8em;
+            color: var(--accent-color);
+            border-bottom: 2px solid var(--accent-color);
+            padding-bottom: 5px;
+            margin-bottom: 30px;
+            display: inline-block;
+        }
+        
+        /* Selector and Image Grid */
+        .selector-grid {
+            display: grid;
+            grid-template-columns: 1fr 1.5fr; /* 1.5 ratio for image box */
+            gap: 40px;
+        }
+        .category-selector {
+            display: flex;
+            flex-wrap: wrap;
+            align-content: flex-start;
+        }
+        .category-group {
+            display: flex;
+            flex-direction: column;
+            width: 50%; /* Two columns of radio buttons */
+            margin-bottom: 20px;
+        }
+        .category-group label {
+            cursor: pointer;
+            padding: 8px 0;
+            font-size: 1.1em;
+            color: var(--main-text-color);
+            transition: color 0.2s;
+        }
+        .category-group label:hover {
+            color: var(--accent-color);
+        }
+        input[type="radio"] {
+            margin-right: 10px;
+            accent-color: var(--accent-color);
+            transform: scale(1.2);
+        }
+
+        /* Image Slideshow (Carousel) */
+        .image-slideshow {
+            position: relative;
+            height: 350px; /* Fixed height for the gallery box */
+            overflow: hidden;
+            border: 2px solid var(--secondary-text-color);
+            border-radius: 8px;
+            background-color: var(--bg-color);
+        }
+        .slide {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            opacity: 0;
+            transition: opacity 1s ease-in-out;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+        .slide.active {
+            opacity: 1;
+        }
+        .slide img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            /* Prevents the image from being stretched or compressed outside the box */
+        }
+        .slider-control {
+            position: absolute;
+            top: 50%;
+            transform: translateY(-50%);
+            background: rgba(0, 0, 0, 0.4);
+            color: white;
+            border: none;
+            padding: 10px;
+            cursor: pointer;
+            z-index: 10;
+            font-size: 1.5em;
+            line-height: 1;
+        }
+        .slider-control:hover {
+            background: rgba(0, 0, 0, 0.6);
+        }
+        .prev { left: 0; border-radius: 0 5px 5px 0; }
+        .next { right: 0; border-radius: 5px 0 0 5px; }
+
+        /* Next Button */
+        .next-button {
+            padding: 12px 30px;
+            background-color: #9b59b6; /* Purple accent color */
+            color: white;
+            border: none;
+            border-radius: 6px;
+            font-size: 1.2em;
+            font-weight: bold;
+            cursor: pointer;
+            transition: background-color 0.2s;
+            margin-top: 30px;
+            display: block;
+        }
+        .next-button:hover {
+            background-color: #8e44ad;
+        }
+        
+        /* Utility for Dark Mode Switch Text */
+        .dark-mode-label {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            user-select: none;
+        }
+    </style>
+</head>
+<body id="appBody">
+
+<div class="header">
+    <div class="logo">GAMEHUB</div>
+    <button class="menu-toggle" id="menuToggle">
+        <i class="fas fa-bars"></i>
+    </button>
+</div>
+
+<!-- Side Menu (Re-using hub_home_logged_in.php structure) -->
+<div class="side-menu" id="sideMenu">
+    <a href="hub_home_logged_in.php"><span class="icon"><i class="fas fa-home"></i></span>Home</a>
+    <a href="hub_home_category_logged_in.php"><span class="icon"><i class="fas fa-book-open"></i></span>Library</a> 
+
+    <div class="menu-divider"></div>
+    
+    <div class="menu-item dark-mode-label" onclick="toggleDarkMode()">
+        <span class="icon"><i class="fas fa-moon"></i></span>
+        <span id="darkModeText">Switch Dark Mode</span>
+    </div>
+
+    <div class="menu-divider"></div>
+
+    <a href="../hub_logout.php" class="logout-link">
+        <span class="icon"><i class="fas fa-sign-out-alt"></i></span>
+        Logout
+    </a>
+</div>
+
+<div class="content-container">
+    <h1 class="hello-title">HELLO <?php echo strtoupper($username); ?></h1>
+    
+    <div class="wave-line"></div>
+
+    <form method="POST">
+        <h2 style="text-align: center; width: 100%;">CHOOSE GAME CATEGORY</h2>
+
+        <div class="selector-grid">
+            
+            <div class="category-selector">
+                <?php 
+                $count = count($categories);
+                $half = ceil($count / 2);
+                
+                // Display categories in two columns
+                echo '<div class="category-group">';
+                for ($i = 0; $i < $count; $i++) {
+                    $category_value = htmlspecialchars($categories[$i]);
+                    
+                    // Use the map to get the display name, defaulting to the capitalized value if not found
+                    $category_display = htmlspecialchars($category_map[$category_value] ?? strtoupper(str_replace('_', ' ', $categories[$i])));
+                    
+                    if ($i == $half) {
+                        echo '</div><div class="category-group">';
+                    }
+                    
+                    echo '<label>';
+                    echo "<input type='radio' name='selected_category' value='{$category_value}' required>";
+                    echo $category_display;
+                    echo '</label>';
+                }
+                echo '</div>';
+                ?>
+            </div>
+
+            <div class="image-slideshow">
+                <?php foreach ($random_images as $index => $path): ?>
+                    <!-- Use the correct path prefix: ../ from the root -->
+                    <div class="slide <?php echo $index === 0 ? 'active' : ''; ?>">
+                        <img src="../<?php echo htmlspecialchars($path); ?>" alt="Game Gallery Image">
+                    </div>
+                <?php endforeach; ?>
+                
+                <button type="button" class="slider-control prev" onclick="changeSlide(-1)">
+                    <i class="fas fa-chevron-left"></i>
+                </button>
+                <button type="button" class="slider-control next" onclick="changeSlide(1)">
+                    <i class="fas fa-chevron-right"></i>
+                </button>
+                
+                <!-- Slide Indicators (Optional, but good UX) -->
+                <div style="position: absolute; bottom: 10px; left: 50%; transform: translateX(-50%); color: white; z-index: 10;">
+                    <?php for ($i = 0; $i < count($random_images); $i++): ?>
+                        <span class="dot" data-index="<?php echo $i; ?>" style="display: inline-block; width: 10px; height: 10px; background: rgba(255, 255, 255, 0.5); border-radius: 50%; margin: 0 3px; cursor: pointer;"></span>
+                    <?php endfor; ?>
+                </div>
+            </div>
+            
+        </div>
+        <button type="submit" class="next-button">NEXT</button>
+    </form>
+</div>
+
+<script>
+    // --- Slide Show Logic ---
+    let currentSlide = 0;
+    const slides = document.querySelectorAll('.slide');
+    const dots = document.querySelectorAll('.dot');
+    const totalSlides = slides.length;
+
+    function showSlide(n) {
+        // Wrap around logic
+        if (n >= totalSlides) {
+            currentSlide = 0;
+        } else if (n < 0) {
+            currentSlide = totalSlides - 1;
+        } else {
+            currentSlide = n;
+        }
+
+        // Hide all slides and remove active class
+        slides.forEach(slide => slide.classList.remove('active'));
+        dots.forEach(dot => dot.style.background = 'rgba(255, 255, 255, 0.5)');
+
+        // Show the new slide and activate the dot
+        slides[currentSlide].classList.add('active');
+        dots[currentSlide].style.background = 'white';
+    }
+
+    function changeSlide(n) {
+        showSlide(currentSlide + n);
+    }
+    
+    // Initialize first slide and indicators
+    if (totalSlides > 0) {
+        showSlide(0);
+    }
+
+
+    // --- Dark Mode Logic (Re-used from hub_home_logged_in.php) ---
+
+    document.getElementById('menuToggle').addEventListener('click', function() {
+        const menu = document.getElementById('sideMenu');
+        menu.classList.toggle('open');
+    });
+
+    const body = document.getElementById('appBody');
+    const darkModeText = document.getElementById('darkModeText');
+    const localStorageKey = 'gamehubDarkMode';
+
+    function applyDarkMode(isDark) {
+        if (isDark) {
+            body.classList.add('dark-mode');
+            darkModeText.textContent = 'Switch Light Mode';
+        } else {
+            body.classList.remove('dark-mode');
+            darkModeText.textContent = 'Switch Dark Mode';
+        }
+    }
+
+    function toggleDarkMode() {
+        const isDark = body.classList.contains('dark-mode');
+        
+        // Toggle the state
+        applyDarkMode(!isDark);
+
+        // Save preference to local storage
+        localStorage.setItem(localStorageKey, !isDark ? 'dark' : 'light');
+    }
+
+    // Load saved preference when the script runs
+    (function loadDarkModePreference() {
+        const savedMode = localStorage.getItem(localStorageKey);
+        
+        // Use true if explicitly set to 'dark', otherwise default to light
+        const isDark = savedMode === 'dark'; 
+        applyDarkMode(isDark);
+    })();
+</script>
+
+</body>
+</html>

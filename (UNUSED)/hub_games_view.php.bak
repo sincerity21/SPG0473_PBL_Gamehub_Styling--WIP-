@@ -1,0 +1,376 @@
+<?php
+session_start();
+// Path is ../
+require '../hub_conn.php'; 
+
+if (!isset($_SESSION['username'])) {
+    header('Location: ../hub_login.php');
+    exit();
+} 
+
+$current_category_value = isset($_GET['cat']) ? strtolower(trim($_GET['cat'])) : '';
+
+if (empty($current_category_value)) {
+    header('Location: hub_home_category_logged_in.php');
+    exit();
+}
+
+// --- CATEGORY MAPPING LOGIC ---
+$category_map = [
+    'fps' => 'First-Person Shooter', 'rpg' => 'Role-Playing Game', 'moba' => 'Multiplayer Online Battle Arena',
+    'puzzle' => 'Puzzle', 'sport' => 'Sports', 'racing' => 'Racing', 'sim' => 'Simulation',
+    'survival' => 'Survival', 'fight' => 'Fighting',
+];
+$current_category_name = $category_map[$current_category_value] ?? strtoupper(str_replace('_', ' ', $current_category_value));
+
+// --- NEW PHP LOGIC: Get 1 image from (up to) the first 3 games ---
+
+// 1. Get all games for the category (to display in the list)
+$games = selectGamesByCategory($current_category_value);
+
+// 2. Create a new array to hold the 3 slideshow images
+$slideshow_images_data = [];
+$fallback_path = 'uploads/placeholder.png'; // Define the placeholder
+
+// 3. Get only the first 3 games for the slideshow
+$games_for_slideshow = array_slice($games, 0, 3);
+
+// 4. Loop through only those 3 (or fewer) games
+foreach ($games_for_slideshow as $game) {
+    // Get all images for this specific game
+    $game_images = selectGameGalleryImages($game['game_id']);
+    
+    if (empty($game_images)) {
+        // If no images, use the placeholder
+        $slideshow_images_data[] = ['img_path' => $fallback_path];
+    } else {
+        // If images exist, add only the FIRST one
+        $slideshow_images_data[] = $game_images[0]; 
+    }
+}
+
+// 5. Fallback if the category has NO games at all
+if (empty($games)) {
+    $slideshow_images_data[] = ['img_path' => $fallback_path]; 
+}
+// --- END OF NEW PHP LOGIC ---
+
+// Get the username for the header
+$username = htmlspecialchars($_SESSION['username']); 
+
+?>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title><?php echo htmlspecialchars($current_category_name); ?> Games - Game Hub</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    
+    <style>
+        /* --- CSS Variables for Theming --- */
+        :root {
+            --bg-color: #f4f7f6; --main-text-color: #333; --accent-color: #3498db; 
+            --secondary-text-color: #7f8c8d; --card-bg-color: white; --shadow-color: rgba(0, 0, 0, 0.05);
+            --welcome-title-color: #2c3e50;
+        }
+        body.dark-mode {
+            --bg-color: #121212; --main-text-color: #f4f4f4; --accent-color: #4dc2f9;
+            --secondary-text-color: #95a5a6; --card-bg-color: #1e1e1e; --shadow-color: rgba(0, 0, 0, 0.4);
+            --welcome-title-color: #ecf0f1;
+        }
+        
+        /* --- General Styles --- */
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; margin: 0; padding: 0; background-color: var(--bg-color); color: var(--main-text-color); min-height: 100vh; transition: background-color 0.3s, color 0.3s; }
+        .header { background-color: var(--card-bg-color); padding: 15px 30px; display: flex; justify-content: space-between; align-items: center; box-shadow: 0 2px 4px var(--shadow-color); }
+        .logo { font-size: 24px; font-weight: 700; color: var(--accent-color); }
+        .menu-toggle { background: none; border: none; cursor: pointer; font-size: 24px; color: var(--main-text-color); padding: 5px; }
+        .side-menu { position: fixed; top: 60px; right: 0; width: 220px; background-color: var(--card-bg-color); box-shadow: -4px 4px 8px var(--shadow-color); border-radius: 8px 0 8px 8px; padding: 10px 0; z-index: 1000; transform: translateX(100%); transition: transform 0.3s ease-in-out; }
+        .side-menu.open { transform: translateX(0); }
+        .side-menu a, .menu-item { display: block; padding: 12px 20px; color: var(--main-text-color); text-decoration: none; transition: background-color 0.2s; cursor: pointer; }
+        .side-menu a:hover, .menu-item:hover { background-color: var(--bg-color); color: var(--accent-color); }
+        .menu-divider { border-top: 1px solid var(--secondary-text-color); margin: 5px 0; }
+        .logout-link { color: #e74c3c !important; font-weight: bold; }
+        .icon { margin-right: 10px; width: 20px; text-align: center; }
+        .dark-mode-label { display: flex; justify-content: space-between; align-items: center; user-select: none; }
+
+        /* Content Layout */
+        .content-container { max-width: 1200px; margin: 40px auto; padding: 20px; background-color: var(--card-bg-color); border-radius: 10px; box-shadow: 0 4px 15px var(--shadow-color); }
+        
+        .games-display-grid {
+            display: grid;
+            grid-template-columns: 1fr 1.5fr; 
+            gap: 40px;
+            margin-top: 30px;
+        }
+        .genre-header {
+            font-size: 1.8em;
+            color: var(--welcome-title-color);
+            margin-bottom: 20px;
+            border-bottom: 2px solid var(--accent-color);
+            padding-bottom: 5px;
+            display: inline-block;
+        }
+
+        /* --- UPDATED: Game List Styles --- */
+        .game-list ul {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+        .game-list li {
+            font-size: 1.1em;
+            padding: 8px 0;
+            color: var(--main-text-color);
+            transition: color 0.2s, font-weight 0.2s;
+            display: flex;
+            align-items: center;
+            /* REMOVED: cursor: pointer; */
+        }
+        .game-list li::before {
+            content: "\25CB"; /* Circle bullet point */
+            color: var(--accent-color);
+            display: inline-block;
+            width: 1em;
+            margin-right: 0.5em;
+            font-size: 0.8em;
+            line-height: 1;
+        }
+        .game-list li:hover {
+            color: var(--accent-color);
+            font-weight: bold;
+        }
+        /* REMOVED: .game-list li.active selector */
+
+
+        /* Image Slideshow (Carousel) Styles */
+        .image-slideshow {
+            position: relative;
+            height: 350px; 
+            overflow: hidden;
+            border: 2px solid var(--secondary-text-color);
+            border-radius: 8px;
+            background-color: var(--bg-color);
+        }
+        .slide {
+            position: absolute; top: 0; left: 0; width: 100%; height: 100%;
+            opacity: 0; transition: opacity 1s ease-in-out;
+            display: flex; justify-content: center; align-items: center;
+        }
+        .slide.active { opacity: 1; }
+        .slide img {
+            width: 100%; height: 100%; 
+            object-fit: cover; 
+        }
+        .slider-control {
+            position: absolute; top: 50%; transform: translateY(-50%);
+            background: rgba(0, 0, 0, 0.4); color: white; border: none; padding: 10px; cursor: pointer; z-index: 10; font-size: 1.5em; line-height: 1;
+        }
+        .slider-control:hover {
+            background: rgba(0, 0, 0, 0.6);
+        }
+        .prev { left: 0; border-radius: 0 5px 5px 0; }
+        .next { right: 0; border-radius: 5px 0 0 5px; }
+        .slide-indicators {
+            position: absolute; bottom: 10px; left: 50%; transform: translateX(-50%); z-index: 10; display: flex; gap: 5px;
+        }
+        .dot {
+            display: inline-block; width: 10px; height: 10px; background: rgba(255, 255, 255, 0.5); border-radius: 50%; cursor: pointer; transition: background 0.3s;
+        }
+        .dot.active { background: white; }
+
+        .back-link { display: inline-block; margin-bottom: 20px; color: var(--accent-color); text-decoration: none; font-weight: 600; }
+        .back-link:hover { text-decoration: underline; }
+    </style>
+</head>
+<body id="appBody">
+
+<div class="header">
+    <div class="logo">GAMEHUB</div>
+    <button class="menu-toggle" id="menuToggle">
+        <i class="fas fa-bars"></i>
+    </button>
+</div>
+
+<div class="side-menu" id="sideMenu">
+    <a href="hub_home_logged_in.php"><span class="icon"><i class="fas fa-home"></i></span>Home</a>
+    <a href="hub_home_category_logged_in.php"><span class="icon"><i class="fas fa-book-open"></i></span>Library</a> 
+    <a href="../hub_profile.php"><span class="icon"><i class="fas fa-user-circle"></i></span>Profile</a>
+    <div class="menu-divider"></div>
+    <div class="menu-item dark-mode-label" onclick="toggleDarkMode()">
+        <span class="icon"><i class="fas fa-moon"></i></span>
+        <span id="darkModeText">Switch Dark Mode</span>
+    </div>
+    <div class="menu-divider"></div>
+    <a href="../hub_logout.php" class="logout-link">
+        <span class="icon"><i class="fas fa-sign-out-alt"></i></span>
+        Logout
+    </a>
+</div>
+
+<div class="content-container">
+    <a href="hub_home_category_logged_in.php" class="back-link">
+        <i class="fas fa-chevron-left"></i> Back to Categories
+    </a>
+
+    <p style="font-size: 1.5em;">Let's explore <?php echo htmlspecialchars($current_category_name); ?> games!</p>
+
+    <div class="games-display-grid">
+        <div class="game-list">
+            <h2 class="genre-header"><?php echo strtoupper($current_category_value); ?> GAMES</h2>
+            
+            <?php if (!empty($games)): ?>
+                <ul>
+                    <?php foreach ($games as $game): ?>
+                        <li>
+                            <?php echo htmlspecialchars($game['game_name']); ?>
+                        </li>
+                    <?php endforeach; ?>
+                </ul>
+            <?php else: ?>
+                <p>No games found in the **<?php echo htmlspecialchars($current_category_name); ?>** category yet.</p>
+            <?php endif; ?>
+        </div>
+
+        <div class="image-slideshow">
+            <div id="slideshow-content">
+                <?php if (!empty($slideshow_images_data)): ?>
+                    <?php foreach ($slideshow_images_data as $index => $image_data): ?>
+                        <div class="slide <?php echo $index === 0 ? 'active' : ''; ?>">
+                            <img src="../<?php echo htmlspecialchars($image_data['img_path']); ?>" alt="Game Screenshot">
+                        </div>
+                    <?php endforeach; ?>
+                <?php else: ?>
+                     <p style="color: var(--secondary-text-color); padding: 20px;">No images available for this game.</p>
+                <?php endif; ?>
+            </div>
+            
+            <?php if (count($slideshow_images_data) > 1): ?>
+                <button type="button" class="slider-control prev" onclick="changeSlide(-1)">
+                    <i class="fas fa-chevron-left"></i>
+                </button>
+                <button type="button" class="slider-control next" onclick="changeSlide(1)">
+                    <i class="fas fa-chevron-right"></i>
+                </button>
+                <div class="slide-indicators" id="slide-indicators">
+                    <?php for ($i = 0; $i < count($slideshow_images_data); $i++): ?>
+                        <span class="dot <?php echo $i === 0 ? 'active' : ''; ?>" data-index="<?php echo $i; ?>"></span>
+                    <?php endfor; ?>
+                </div>
+            <?php endif; ?>
+        </div>
+    </div>
+</div>
+
+<script>
+    // --- Dark Mode and Menu Logic (Unchanged) ---
+    document.getElementById('menuToggle').addEventListener('click', function() {
+        const menu = document.getElementById('sideMenu');
+        menu.classList.toggle('open');
+    });
+
+    const body = document.getElementById('appBody');
+    const darkModeText = document.getElementById('darkModeText');
+    const localStorageKey = 'gamehubDarkMode';
+
+    function applyDarkMode(isDark) {
+        if (isDark) {
+            body.classList.add('dark-mode');
+            darkModeText.textContent = 'Switch Light Mode';
+        } else {
+            body.classList.remove('dark-mode');
+            darkModeText.textContent = 'Switch Dark Mode';
+        }
+    }
+
+    function toggleDarkMode() {
+        const isDark = body.classList.contains('dark-mode');
+        applyDarkMode(!isDark);
+        localStorage.setItem(localStorageKey, !isDark ? 'dark' : 'light');
+    }
+
+    (function loadDarkModePreference() {
+        const savedMode = localStorage.getItem(localStorageKey);
+        const isDark = savedMode === 'dark'; 
+        applyDarkMode(isDark);
+    })();
+
+
+    // --- Slideshow & Auto-Slide Logic (Unchanged) ---
+    // This script now simply controls the static 3-image slideshow
+    let currentSlide = 0;
+    let slides = []; 
+    let dots = [];   
+    let totalSlides = 0;
+    const slideshowElement = document.querySelector('.image-slideshow');
+    
+    const AUTO_SLIDE_INTERVAL = 5000; 
+    let slideTimer = null; 
+
+    function startAutoSlide() {
+        stopAutoSlide(); 
+        slideTimer = setInterval(() => {
+            if (totalSlides > 1) { 
+                changeSlide(1);
+            }
+        }, AUTO_SLIDE_INTERVAL);
+    }
+    
+    function stopAutoSlide() {
+        if (slideTimer !== null) {
+            clearInterval(slideTimer);
+            slideTimer = null;
+        }
+    }
+
+    function initializeSlideshow() {
+        slides = document.querySelectorAll('#slideshow-content .slide');
+        dots = document.querySelectorAll('#slide-indicators .dot');
+        totalSlides = slides.length;
+        currentSlide = 0; 
+        
+        if (totalSlides > 0) {
+            showSlide(0);
+        }
+
+        if (totalSlides > 1) {
+            startAutoSlide();
+        } else {
+            stopAutoSlide();
+        }
+    }
+
+    function showSlide(n) {
+        if (totalSlides === 0) return;
+
+        if (n >= totalSlides) {
+            currentSlide = 0;
+        } else if (n < 0) {
+            currentSlide = totalSlides - 1;
+        } else {
+            currentSlide = n;
+        }
+
+        slides.forEach(slide => slide.classList.remove('active'));
+        dots.forEach(dot => dot.classList.remove('active'));
+
+        if (slides[currentSlide]) {
+            slides[currentSlide].classList.add('active');
+        }
+        if (dots[currentSlide]) {
+            dots[currentSlide].classList.add('active');
+        }
+    }
+
+    function changeSlide(n) {
+        showSlide(currentSlide + n);
+        startAutoSlide(); 
+    }
+    
+    document.addEventListener('DOMContentLoaded', initializeSlideshow);
+
+    // --- All AJAX and click-handling JS has been removed ---
+    
+</script>
+</body>
+</html>
