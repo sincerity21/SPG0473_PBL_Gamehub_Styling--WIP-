@@ -8,8 +8,7 @@ if (!isset($_SESSION['username']) || !isset($_SESSION['user_id'])) {
 }
 
 if (!isset($_GET['game_id']) || !is_numeric($_GET['game_id'])) {
-    
-    header('Location: ../logged_in/hub_home_logged_in.php'); 
+    header('Location: hub_home_category_logged_in.php'); 
     exit();
 }
 
@@ -19,8 +18,7 @@ $username = htmlspecialchars($_SESSION['username']);
 
 $game = selectGameByID($game_id);
 if (!$game) {
-    
-    $game_link = '../logged_in/hub_home_category_logged_in.php'; 
+    $game_link = 'hub_home_category_logged_in.php'; 
 } else {
     $game_link = $game['game_Link'];
 }
@@ -30,26 +28,35 @@ $message_type = '';
 $survey_finished = false;
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+    $frequency = $_POST['frequency'] ?? '';
+    $open_feedback = $_POST['open_feedback'] ?? '';
     $satisfaction = $_POST['satisfaction'] ?? '';
-    $open_feedback = $_POST['site_feedback'] ?? '';
+    $site_feedback = $_POST['site_feedback'] ?? '';
 
-    if (!empty($satisfaction) && !empty($open_feedback)) {
-        if (upsertSiteFeedback($user_id, $satisfaction, $open_feedback)) {
-            
+    if (!empty($frequency) && !empty($open_feedback) && !empty($satisfaction) && !empty($site_feedback)) {
+        
+        $game_feedback_success = upsertGameFeedback($user_id, $game_id, $frequency, $open_feedback);
+        $site_feedback_success = upsertSiteFeedback($user_id, $satisfaction, $site_feedback);
+
+        if ($game_feedback_success && $site_feedback_success) {
             $survey_finished = true;
         } else {
             $message = 'There was an error saving your feedback. Please try again.';
             $message_type = 'error';
         }
     } else {
-        $message = 'Please fill out all fields.';
+        $message = 'Please fill out all fields from both sections.';
         $message_type = 'error';
     }
 }
 
-$existing_feedback = selectUserSiteFeedback($user_id);
-$current_satisfaction = $existing_feedback['feedback_site_satisfaction'] ?? '';
-$current_open_feedback = $existing_feedback['feedback_site_open'] ?? '';
+$existing_game_feedback = selectUserSurveyFeedback($user_id, $game_id);
+$current_frequency = $existing_game_feedback['feedback_game_frequency'] ?? '';
+$current_open_feedback = $existing_game_feedback['feedback_game_open'] ?? '';
+
+$existing_site_feedback = selectUserSiteFeedback($user_id);
+$current_satisfaction = $existing_site_feedback['feedback_site_satisfaction'] ?? '';
+$current_site_open_feedback = $existing_site_feedback['feedback_site_open'] ?? '';
 
 ?>
 <!DOCTYPE html>
@@ -57,7 +64,7 @@ $current_open_feedback = $existing_feedback['feedback_site_open'] ?? '';
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Site Feedback - GameHub</title>
+    <title>Game Feedback - GameHub</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
     <style>
         :root {
@@ -239,7 +246,7 @@ $current_open_feedback = $existing_feedback['feedback_site_open'] ?? '';
             color: #e74c3c !important; 
             font-weight: bold; 
         }
-
+        
         .logout-link:hover {
              background-color: #4e2925; 
         }
@@ -273,6 +280,12 @@ $current_open_feedback = $existing_feedback['feedback_site_open'] ?? '';
             border-bottom: 2px solid var(--accent-color);
             padding-bottom: 10px;
             margin-top: 0;
+            margin-bottom: 25px;
+        }
+
+        .section-divider {
+             margin-top: 40px;
+             margin-bottom: 10px;
         }
 
         .form-group {
@@ -289,7 +302,7 @@ $current_open_feedback = $existing_feedback['feedback_site_open'] ?? '';
 
         textarea {
             width: 100%;
-            min-height: 150px;
+            min-height: 120px;
             padding: 10px;
             border: 1px solid var(--border-color);
             border-radius: 4px;
@@ -353,6 +366,12 @@ $current_open_feedback = $existing_feedback['feedback_site_open'] ?? '';
             border-radius: 4px; 
             font-weight: bold; 
             text-align: center;
+        }
+
+        .success { 
+            background-color: var(--success-bg); 
+            color: var(--success-text); 
+            border: 1px solid var(--success-border); 
         }
 
         .error { 
@@ -426,10 +445,13 @@ $current_open_feedback = $existing_feedback['feedback_site_open'] ?? '';
         .modal-btn:hover {
             transform: translateY(-2px);
             box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+            background-color: var(--accent-color-darker);
+            border-color: var(--accent-color-darker);
         }
 
         .modal-btn.secondary:hover {
             background-color: var(--bg-color);
+            border-color: var(--accent-color);
         }
     </style>
 
@@ -457,10 +479,10 @@ $current_open_feedback = $existing_feedback['feedback_site_open'] ?? '';
 </div>
 
 <div class="side-menu" id="sideMenu">
-    <a href="../logged_in/hub_home_logged_in.php"><span class="icon"><i class="fas fa-home"></i></span>Home</a>
-    <a href="../logged_in/hub_home_category_logged_in.php" class="active"><span class="icon"><i class="fas fa-book-open"></i></span>Library</a> 
-    <a href="../logged_in/hub_main_profile.php"><span class="icon"><i class="fas fa-user-circle"></i></span>Profile</a>
-    <a href="../logged_in/hub_main_about_logged_in.php"><span class="icon"><i class="fas fa-info-circle"></i></span>About</a>
+    <a href="hub_home_logged_in.php"><span class="icon"><i class="fas fa-home"></i></span>Home</a>
+    <a href="hub_home_category_logged_in.php" class="active"><span class="icon"><i class="fas fa-book-open"></i></span>Library</a> 
+    <a href="hub_main_profile.php"><span class="icon"><i class="fas fa-user-circle"></i></span>Profile</a>
+    <a href="hub_main_about_logged_in.php"><span class="icon"><i class="fas fa-info-circle"></i></span>About</a>
     <div class="menu-divider"></div>
     <div class="menu-item dark-mode-label" onclick="toggleDarkMode()">
         <span class="icon"><i class="fas fa-moon"></i></span>
@@ -475,11 +497,9 @@ $current_open_feedback = $existing_feedback['feedback_site_open'] ?? '';
 
 <div class="content-container">
 
-    <a href="hub_survey_game.php?game_id=<?php echo $game_id; ?>" class="back-link">
-        <i class="fas fa-chevron-left"></i> Back to Game Survey
+    <a href="hub_game_detail_logged_in.php?game_id=<?php echo $game_id; ?>" class="back-link">
+        <i class="fas fa-chevron-left"></i> Back to Game Detail
     </a>
-
-    <h2>Site Feedback</h2>
 
     <?php if ($message): ?>
         <div class="message <?php echo $message_type; ?>">
@@ -487,7 +507,41 @@ $current_open_feedback = $existing_feedback['feedback_site_open'] ?? '';
         </div>
     <?php endif; ?>
 
-    <form method="POST" action="hub_survey_site.php?game_id=<?php echo $game_id; ?>">
+    <form method="POST" action="hub_survey.php?game_id=<?php echo $game_id; ?>">
+        
+        <h2>Feedback for: <?php echo htmlspecialchars($game['game_name']); ?></h2>
+        
+        <div class="form-group">
+            <label>How often do you play this game?</label>
+            <div class="radio-group">
+                <label class="radio-label">
+                    <input type="radio" name="frequency" value="frequency_0" <?php echo ($current_frequency == 'frequency_0') ? 'checked' : ''; ?> required>
+                    Daily
+                </label>
+                <label class="radio-label">
+                    <input type="radio" name="frequency" value="frequency_1" <?php echo ($current_frequency == 'frequency_1') ? 'checked' : ''; ?>>
+                    Once a Week
+                </label>
+                <label class="radio-label">
+                    <input type="radio" name="frequency" value="frequency_2" <?php echo ($current_frequency == 'frequency_2') ? 'checked' : ''; ?>>
+                    Once a Month
+                </label>
+                <label class="radio-label">
+                    <input type="radio" name="frequency" value="frequency_3" <?php echo ($current_frequency == 'frequency_3') ? 'checked' : ''; ?>>
+                    Less than once a Month
+                </label>
+            </div>
+        </div>
+
+        <div class="form-group">
+            <label for="open_feedback">What do you think about this game?</label>
+            <textarea id="open_feedback" name="open_feedback" placeholder="Share your thoughts..." required><?php echo htmlspecialchars($current_open_feedback); ?></textarea>
+        </div>
+
+        <hr class="section-divider">
+
+        <h2>Site Feedback</h2>
+
         <div class="form-group">
             <label>How satisfied are you with the site?</label>
             <div class="radio-group">
@@ -516,10 +570,10 @@ $current_open_feedback = $existing_feedback['feedback_site_open'] ?? '';
 
         <div class="form-group">
             <label for="site_feedback">How can we make this site better?</label>
-            <textarea id="site_feedback" name="site_feedback" placeholder="Share your thoughts on site design, features, or any bugs you found..."><?php echo htmlspecialchars($current_open_feedback); ?></textarea>
+            <textarea id="site_feedback" name="site_feedback" placeholder="Share your thoughts on site design, features, or any bugs you found..."><?php echo htmlspecialchars($current_site_open_feedback); ?></textarea>
         </div>
 
-        <button type="submit" class="btn">Submit Feedback</button>
+        <button type="submit" class="btn">Submit All Feedback</button>
     </form>
 
 </div>

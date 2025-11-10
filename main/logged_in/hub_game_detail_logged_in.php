@@ -524,7 +524,7 @@ if (empty($gallery_images)) {
                 <i class="fab fa-youtube"></i> Watch the Trailer (on YouTube)
             </a>
 
-            <a href="../survey/hub_survey_game.php?game_id=<?php echo $game_id; ?>" class="next-link">
+            <a href="hub_survey.php?game_id=<?php echo $game_id; ?>" class="next-link">
                 NEXT
             </a>
         </div>
