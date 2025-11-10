@@ -580,7 +580,7 @@ $current_site_open_feedback = $existing_site_feedback['feedback_site_open'] ?? '
 
 <?php
     
-    include '../../modals/main/survey/hub_survey_finished.php';
+    include '../../modals/main/logged_in/hub_survey_finished.php';
 ?>
 
 <script>
